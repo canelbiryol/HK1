@@ -1,5 +1,6 @@
 import numpy as np
 import math
+from _collections import deque
 
 class TAQCleaner(object):
     '''
@@ -23,7 +24,7 @@ class TAQCleaner(object):
     def cleanQuotesIndices(self):
         # toRemove will keep track of indices to remove
         length = self._quotes.shape[0]
-        toRemove = np.array([])
+        toRemove = deque()
         i = 0
         
         # Rolling parameters
@@ -61,16 +62,17 @@ class TAQCleaner(object):
             # Test criterion
             for j in range(0, self._k):
                 if (abs(rollWindowMid[j] - rollMeanMid) >= 2 * rollStdMid + self._gamma * rollMeanMid):
-                    toRemove = np.append(toRemove, leftIndex + j)
+                    toRemove.append(leftIndex + j)
                     
-        toRemove = np.unique(toRemove)
-        toRemove = toRemove.astype(int)
-        return(toRemove)
+        npytoRemove = np.array(toRemove)
+        npytoRemove = npytoRemove.astype(int)
+        npytoRemove = np.unique(npytoRemove)
+        return(npytoRemove)
                     
     def cleanTradesIndices(self):
         # toRemove will keep track of indices to remove
         length = self._trades.shape[0]
-        toRemove = np.array([])
+        toRemove = deque()
         i = 0
         
         # Rolling parameters
@@ -107,15 +109,16 @@ class TAQCleaner(object):
             for j in range(0, self._k):
                 if (abs(rollWindow[j] - rollMean) >= 2 * rollStd + self._gamma * rollMean):
                     self._trades
-                    toRemove = np.append(toRemove, leftIndex + j)
+                    toRemove.append(leftIndex + j)
                     
-        toRemove = np.unique(toRemove)
-        toRemove = toRemove.astype(int)
-        return(toRemove)
+        npytoRemove = np.array(toRemove)
+        npytoRemove = npytoRemove.astype(int)
+        npytoRemove = np.unique(npytoRemove)
+        return(npytoRemove)
         
-    def storeCleanedTrades(self, directory):
+    def storeCleanedTrades(self, trades, directory):
         print("TODO")
         
-    def storeCleanedQuotes(self, directory):
+    def storeCleanedQuotes(self, quotes, directory):
         print("TODO")
         
