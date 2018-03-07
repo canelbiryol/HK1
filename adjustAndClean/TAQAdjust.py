@@ -68,7 +68,7 @@ class TAQAdjust(object):
         return(self._quotes)
 
     def getStackedTrades(self):
-        return(self.__trades)
+        return(self._trades)
         
     def getVolMult(self, date):
         return(self._Mult.loc[date, 1])

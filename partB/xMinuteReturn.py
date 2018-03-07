@@ -1,46 +1,51 @@
 import numpy as np
 
-def getXMinuteTradeReturns(data, seconds):
+def getXSecTradeReturns(data, seconds):
     delta = 1000 * seconds
         
-    nRecs = data.getN()
-    lastTs = data.getTimestamp(0)
-    lastPrice = data.getPrice(0)
-    TradeReturns = []
+    nRecs = len(data)
+    tradeReturns = []
     
+    lastDate = int(data[0][0])
+    lastTs = int(data[0][2])
+    lastPrice = float(data[0][3])
+
     for startI in range( 1, nRecs ):
-        timestamp = data.getTimestamp( startI )
+        date = int(data[startI][0])
+        timestamp = int(data[startI][2])
+        price = float(data[startI][3])
             
         # check this
-        if timestamp > (lastTs + delta):
-            lastTs = lastTs + delta
-            newPrice = data.getPrice( startI )
-                
-            TradeReturns.append( np.log(newPrice/lastPrice) )
-            lastPrice = newPrice
+        if timestamp > (lastTs + delta) or date > lastDate: 
+            tradeReturns.append( (price / lastPrice) - 1 )
+            lastDate = date
             lastTs = timestamp
+            lastPrice = price
         
-    return TradeReturns
+    return tradeReturns
 
-def getXMinuteMidQuoteReturns(data, minutes):
-    delta = 1000 * 60 * minutes
+# [DATE, TICKER, TIMESTAMP, BIDPRICE, BIDSIZE, ASKPRICE, ASKSIZE]
+
+def getXSecMidQuoteReturns(data, seconds):
+    delta = 1000 * seconds
         
-    nRecs = data.getN()
-    lastTs = data.getTimestamp(0)
-    lastMidQuote = (data.getAskPrice( 0 ) + data.getBidPrice( 0 ))  / 2 
+    nRecs = len(data)
+    lastDate = int(data[0][0])
+    lastTs = int(data[0][2])
+    lastMidQuote = (float(data[0][3]) + float(data[0][5])) / 2 
+    
+    #lastMidQuote = (data.getAskPrice( 0 ) + data.getBidPrice( 0 ))  / 2 
     midQuoteReturns = []
     for startI in range( 1, nRecs ):
-        timestamp = data.getTimestamp( startI )
+        date = int(data[startI][0])
+        timestamp = int(data[startI][2])
+        midQuote = (float(data[startI][3]) + float(data[startI][5])) / 2
             
         # check this
-        if timestamp > (lastTs + delta):
-            lastTs = lastTs + delta
-            #askPrice = data.getAskPrice( startI )
-            #bidPrice = data.getBidPrice( startI ) 
-            midQuote = (data.getAskPrice( startI ) + data.getBidPrice( startI ))  / 2 
-            
-            midQuoteReturns.append( np.log(midQuote/lastMidQuote) )
-            lastMidQuote = midQuote
+        if timestamp > (lastTs + delta) or date > lastDate: 
+            midQuoteReturns.append( (midQuote / lastMidQuote) - 1 )
+            lastDate = date
             lastTs = timestamp
-        
+            lastMidQuote = midQuote
+            
     return midQuoteReturns
