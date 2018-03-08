@@ -20,8 +20,8 @@ def getXSecTradeReturns(data, delta):
         # check this
         if timestamp > (lastTs + delta): 
             tradeReturns.append( (price / lastPrice) - 1 )
-            timestamps.append(timestamp)
-            lastTs = timestamp
+            lastTs = lastTs + delta
+            timestamps.append(lastTs)
             lastPrice = price
         
     return [tradeReturns, timestamps]
@@ -43,8 +43,8 @@ def getXSecMidQuoteReturns(data, delta):
         # check this
         if timestamp > (lastTs + delta): 
             midQuoteReturns.append( (midQuote / lastMidQuote) - 1 )
-            timestamps.append(timestamp)
-            lastTs = timestamp
+            lastTs = lastTs + delta
+            timestamps.append(lastTs)
             lastMidQuote = midQuote
             
     return [midQuoteReturns, timestamps]

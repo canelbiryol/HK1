@@ -68,7 +68,7 @@ if __name__ == '__main__':
     baseDir = "/Users/canelbiryol/R"
     #baseDir = "/Users/canelbiryol/Documents/SampleTAQ"
     startDate = "20070620"
-    endDate = "20070921"
+    endDate = "20070920"
     ticker = 'MSFT'
     #ticker = 'IBM'
     seconds = 60
@@ -108,12 +108,12 @@ if __name__ == '__main__':
     trades = adjuster.getStackedTrades()
     
     print("* Adjusted at {:02f} secs".format(time.time() - startTime))
-    
+     
     print("----------------------------------------------------------------------")
     print("---------------- Stats for Adjusted but Unclean Data ------------------")
     print("----------------------------------------------------------------------")
     taqstats = printStats(trades, quotes, seconds)
-    
+     
     # Plot Trade and Mid-Quote Returns
     title = str(seconds) + ' seconds Trade and Mid-Quote Returns for ' + ticker + '\nwith the Adjusted Data'
     outputFile = "/Users/canelbiryol/Figs/" + ticker + "_" + str(seconds) + "sec_adjusted.png"
