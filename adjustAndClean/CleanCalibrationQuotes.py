@@ -6,7 +6,7 @@ import pandas as pd
 import random
 
 """
-Calibration program for gamma and k.
+Calibration program for gamma and k for quotes.
 We try different values and choose the one that minimize the kurtosis, and keep the skewness around 0.
 We pick random stocks and compute mean kurtosis and skewness with several values of (k,gamma).
 RESULT: After simulations, we get k = 45 and gamma = 0.02.
@@ -43,20 +43,20 @@ stacks = np.array([StackData(baseDir, startDate, endDate, ticker) for ticker in 
 print(stacks)
 for s in stacks:
     print('hey')
-    s.addTrades()
+    s.addQuotes()
 
 i = 0
 for k in k_test:
     j = 0
     for gamma in gamma_test:
         for s in stacks:
-            trades = s.getStackedTrades()
-            if (trades.size == 0):
+            quotes = s.getStackedQuotes()
+            if (quotes.size == 0):
                 continue
-            cleaner = TAQCleaner([], trades, k, gamma)
-            trades = np.delete(trades, cleaner.cleanTradesIndices(), axis = 0)
-            skews[i,j] += skew(np.array(trades[:,-2].astype(np.float)))
-            kurtosiss[i,j] += kurtosis(np.array(trades[:,-2].astype(np.float)))
+            cleaner = TAQCleaner(quotes, [], k, gamma)
+            quotes = np.delete(quotes, cleaner.cleanQuotesIndices(), axis = 0)
+            skews[i,j] += skew(np.array(quotes[:,-2].astype(np.float)))
+            kurtosiss[i,j] += kurtosis(np.array(quotes[:,-2].astype(np.float)))
         skews[i,j] = skews[i,j] / l
         kurtosiss[i,j] = kurtosiss[i,j] / l
         j += 1

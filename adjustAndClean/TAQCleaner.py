@@ -9,7 +9,7 @@ class TAQCleaner(object):
     Default values for k and gamma were those given by the simulation (cf. CleanCalibration.py)
     '''
 
-    def __init__(self, stackedQuotes, stackedTrades, k=45, gamma=0.02):
+    def __init__(self, stackedQuotes, stackedTrades, kT=45, gammaT=0.02, kQ=55, gammaQ=0.0175):
         '''
         Constructor: initialize attributes
         '''
@@ -18,8 +18,10 @@ class TAQCleaner(object):
         self._trades = stackedTrades
         
         # Suggested initial parameters, to calibrate
-        self._k = k
-        self._gamma = gamma
+        self._kT = kT
+        self._gammaT = gammaT
+        self._kQ = kQ
+        self._gammaQ = gammaQ
 
     def cleanQuotesIndices(self):
         # toRemove will keep track of indices to remove
@@ -28,7 +30,6 @@ class TAQCleaner(object):
         i = 0
         
         # Rolling parameters
-        rollWindowMid = np.array([])
         rollMeanMid = 0
         rollStdMid = 0
         
@@ -43,8 +44,8 @@ class TAQCleaner(object):
         midList = 0.5 * (np.array(self._quotes[0:length,-4].astype(np.float)) - np.array(self._quotes[0:length,-2].astype(np.float)))
         
         for i in range(0,length):
-            leftIndex = math.floor(i - self._k / 2)
-            rightIndex = math.floor(i + self._k / 2)
+            leftIndex = math.floor(i - self._kQ / 2)
+            rightIndex = math.floor(i + self._kQ / 2)
             
             # Set bounds of the rolling windows, taking into account limit cases
             if (leftIndex < 0):
@@ -55,14 +56,12 @@ class TAQCleaner(object):
                 rightIndex = length
             
             # Compute rolling metrics
-            rollWindowMid = midList[leftIndex:rightIndex]
-            rollMeanMid = np.mean(rollWindowMid)
-            rollStdMid = np.std(rollWindowMid)
+            rollMeanMid = np.mean(midList[leftIndex:rightIndex])
+            rollStdMid = np.std(midList[leftIndex:rightIndex])
 
             # Test criterion
-            for j in range(0, self._k):
-                if (abs(rollWindowMid[j] - rollMeanMid) >= 2 * rollStdMid + self._gamma * rollMeanMid):
-                    toRemove.append(leftIndex + j)
+            if (abs(midList[i] - rollMeanMid) >= 2 * rollStdMid + self._gammaQ * rollMeanMid):
+                toRemove.append(i)
                     
         npytoRemove = np.array(toRemove)
         npytoRemove = npytoRemove.astype(int)
@@ -78,7 +77,6 @@ class TAQCleaner(object):
         i = 0
         
         # Rolling parameters
-        rollWindow = np.array([])
         rollMean = 0
         rollStd = 0
         
@@ -91,8 +89,8 @@ class TAQCleaner(object):
         windowTrade = np.array(self._trades[0:length,-2].astype(np.float))
         
         for i in range(0,length):
-            leftIndex = math.floor(i - self._k / 2)
-            rightIndex = math.floor(i + self._k / 2)
+            leftIndex = math.floor(i - self._kT / 2)
+            rightIndex = math.floor(i + self._kT / 2)
             
             # Set bounds of the rolling windows, taking into account limit cases
             if (leftIndex < 0):
@@ -103,14 +101,12 @@ class TAQCleaner(object):
                 rightIndex = length
 
             # Compute rolling metrics
-            rollWindow = windowTrade[leftIndex:rightIndex]
-            rollMean = np.mean(rollWindow)
-            rollStd = np.std(rollWindow)
+            rollMean = np.mean(windowTrade[leftIndex:rightIndex])
+            rollStd = np.std(windowTrade[leftIndex:rightIndex])
 
             # Test criterion
-            for j in range(0, self._k):
-                if (abs(rollWindow[j] - rollMean) >= 2 * rollStd + self._gamma * rollMean):
-                    toRemove.append(leftIndex + j)
+            if (abs(windowTrade[i] - rollMean) >= 2 * rollStd + self._gammaT * rollMean):
+                toRemove.append(i)
 
         npytoRemove = np.array(toRemove)
         npytoRemove = npytoRemove.astype(int)
