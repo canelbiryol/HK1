@@ -1,6 +1,10 @@
 import numpy as np
 import math
 from _collections import deque
+import struct
+import gzip
+import os.path
+from os import access, R_OK
 
 class TAQCleaner(object):
     '''
@@ -16,6 +20,7 @@ class TAQCleaner(object):
         # Instantiate attributes
         self._quotes = stackedQuotes
         self._trades = stackedTrades
+        self._ticker = stackedQuotes[0,1]
         
         # Suggested initial parameters, to calibrate
         self._kT = kT
@@ -115,9 +120,73 @@ class TAQCleaner(object):
         npytoRemove = np.flip(npytoRemove, axis=0)
         return(npytoRemove)
         
-    def storeCleanedTrades(self, trades, directory):
-        print("TODO")
+    def storeCleanedTrades(self, filepath):
         
-    def storeCleanedQuotes(self, quotes, directory):
-        print("TODO")
+        if not filepath.endswith('/'):
+            filepath = filepath + "/"
+        if not os.path.exists( filepath ):
+            raise Exception( "%s does not exist" % filepath )
+        if( not access( filepath, R_OK ) ):
+            raise Exception( "You don't have access to directory %s" % filepath )
+        
+        filepath = filepath + "trades/"
+        
+        if not os.path.exists(filepath):
+            os.makedirs(filepath)
+
+        filepath = filepath + self._ticker + "_trades.binRT"
+
+        with gzip.open( filepath, 'wb+') as f:
+            # We didn't keep the SecsFromEpocToMidn so we set it to 0 (to be able to read with the TAQReaders provided
+            f.write(struct.pack(">i", 0))
+            # Updated N (number of entries)
+            N = self._trades.shape[0]
+            f.write(struct.pack(">i", N))
+            # Write timestamps
+            for i in range(N):
+                f.write(struct.pack(">i", int(self._trades[i,2])))
+            # Write sizes (int... but could be float with multipliers)
+            for i in range(N):
+                f.write(struct.pack(">i", int(float(self._trades[i,4]))))
+            # Write prices (floats)
+            for i in range(N):
+                f.write(struct.pack(">f", float(self._trades[i,3])))
+
+    def storeCleanedQuotes(self, filepath):
+
+        if not filepath.endswith('/'):
+            filepath = filepath + "/"
+        if not os.path.exists( filepath ):
+            raise Exception( "%s does not exist" % filepath )
+        if( not access( filepath, R_OK ) ):
+            raise Exception( "You don't have access to directory %s" % filepath )
+        
+        filepath = filepath + "quotes/"
+        
+        if not os.path.exists(filepath):
+            os.makedirs(filepath)
+
+        filepath = filepath + self._ticker + "_quotes.binRQ"
+
+        with gzip.open( filepath, 'wb+') as f:
+            # We didn't keep the SecsFromEpocToMidn so we set it to 0 (to be able to read with the TAQReaders provided
+            f.write(struct.pack(">i", 0))
+            # Updated N (number of entries)
+            N = self._quotes.shape[0]
+            f.write(struct.pack(">i", N))
+            # Write timestamps
+            for i in range(N):
+                f.write(struct.pack(">i", int(self._quotes[i,2])))
+            # Write bid sizes (int... but could be float with multipliers)
+            for i in range(N):
+                f.write(struct.pack(">i", int(float(self._quotes[i,4]))))
+            # Write bid prices (floats)
+            for i in range(N):
+                f.write(struct.pack(">f", float(self._quotes[i,3])))
+            # Write ask sizes (int... but could be float with multipliers)
+            for i in range(N):
+                f.write(struct.pack(">i", int(float(self._quotes[i,6]))))
+            # Write ask prices (floats)
+            for i in range(N):
+                f.write(struct.pack(">f", float(self._quotes[i,5])))
         
