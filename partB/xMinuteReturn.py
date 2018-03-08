@@ -5,6 +5,7 @@ def getXSecTradeReturns(data, seconds):
         
     nRecs = len(data)
     tradeReturns = []
+    timestamps = []
     
     lastDate = int(data[0][0])
     lastTs = int(data[0][2])
@@ -18,11 +19,12 @@ def getXSecTradeReturns(data, seconds):
         # check this
         if timestamp > (lastTs + delta) or date > lastDate: 
             tradeReturns.append( (price / lastPrice) - 1 )
+            timestamps.append(timestamp)
             lastDate = date
             lastTs = timestamp
             lastPrice = price
         
-    return tradeReturns
+    return [tradeReturns, timestamps]
 
 # [DATE, TICKER, TIMESTAMP, BIDPRICE, BIDSIZE, ASKPRICE, ASKSIZE]
 
@@ -35,7 +37,8 @@ def getXSecMidQuoteReturns(data, seconds):
     lastMidQuote = (float(data[0][3]) + float(data[0][5])) / 2 
     
     #lastMidQuote = (data.getAskPrice( 0 ) + data.getBidPrice( 0 ))  / 2 
-    midQuoteReturns = []
+    midQuoteReturns = [] 
+    timestamps = []
     for startI in range( 1, nRecs ):
         date = int(data[startI][0])
         timestamp = int(data[startI][2])
@@ -44,8 +47,9 @@ def getXSecMidQuoteReturns(data, seconds):
         # check this
         if timestamp > (lastTs + delta) or date > lastDate: 
             midQuoteReturns.append( (midQuote / lastMidQuote) - 1 )
+            timestamps.append(timestamp)
             lastDate = date
             lastTs = timestamp
             lastMidQuote = midQuote
             
-    return midQuoteReturns
+    return [midQuoteReturns, timestamps]

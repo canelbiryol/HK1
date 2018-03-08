@@ -52,11 +52,16 @@ class TAQStats(object):
 #     #part 2.c
 #     
     def getTradeReturns(self, seconds):
-        return getXSecTradeReturns(self._trades, seconds)
+        return getXSecTradeReturns(self._trades, seconds)[0]
+    
+    def getTradeReturnsTimestamps(self, seconds):
+        return getXSecTradeReturns(self._trades, seconds)[1]
     
     def getMidQuoteReturns(self, seconds):
-        return getXSecMidQuoteReturns(self._quotes, seconds)
+        return getXSecMidQuoteReturns(self._quotes, seconds)[0]
     
+    def getMidQuoteReturnsTimestamps(self, seconds):
+        return getXSecMidQuoteReturns(self._quotes, seconds)[1]
     
     # Mean Returns
     # Check annualization
@@ -68,6 +73,16 @@ class TAQStats(object):
 
     def getQuoteMeanReturns(self, seconds):
         return self._getMeanReturns(self.getMidQuoteReturns(seconds)) * ( 252 / len(self.getQuotesDates()) )
+    
+    #Median Returns
+    def _getMedianReturns(self, data):
+        return np.median( data ) 
+    
+    def getTradeMedianReturns(self, seconds):
+        return self._getMedianReturns(self.getTradeReturns(seconds)) * ( 252 / len(self.getTradeDates()) )
+
+    def getQuoteMedianReturns(self, seconds):
+        return self._getMedianReturns(self.getMidQuoteReturns(seconds)) * ( 252 / len(self.getQuotesDates()) )
     
     # Std Deviations
     # Check annualization
