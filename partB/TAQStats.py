@@ -1,131 +1,128 @@
 import numpy as np
-from dbReaders.TAQTradesReader import TAQTradesReader
-from dbReaders.TAQQuotesReader import TAQQuotesReader
 from astropy.stats import median_absolute_deviation
-from impactModel.FileManager import FileManager
 from scipy.stats import skew, kurtosis
 import heapq
 from partB.xMinuteReturn import getXSecTradeReturns, getXSecMidQuoteReturns
 
 class TAQStats(object):
     '''
-    This class calculates the volume weighted average price between
-    a start time and an end time (exclusive).
+    This class calculates the basic statistics for Trade and Mid-Quote Returns.
     '''
 
-    def __init__( self, trades, quotes):
-        '''
-        This does all the processing and gives the client access to the
-        results via getter methods.
-        '''
-        
+    def __init__( self, trades, quotes, seconds):
         self._trades = trades
         self._quotes = quotes
+        tradeReturns = getXSecTradeReturns(self._trades, seconds)
+        self._tradeReturns = tradeReturns[0]
+        self._tradeTimestamps= tradeReturns[1]        
+        midQuoteReturns = getXSecMidQuoteReturns(self._quotes, seconds)
+        self._quoteReturns = midQuoteReturns[0]
+        self._quoteTimestamps = midQuoteReturns[1]
 
-        # Make sure data is in the right format
-#         if ( data == None ) or ( data.getPrice == None ) or ( data.getTimestamp == None ) or ( data.getN == None ):
-#             raise Exception( "Your data object must implement getPrice(i), getTimestamp(i), and getN() methods" ) 
-    
+    # Get unique dates in Trades data
     def getTradeDates(self):
         return [date for date in set(i[0] for i in self._trades)]
     
+    # Get unique dates in Quotes data
     def getQuotesDates(self):
         return [date for date in set(i[0] for i in self._quotes)]
     
-    #part 2.a
-    #how many days in the data for a ticker
+    # Get number of days in the data for a ticker
     def getSampleLength(self):
         return len(self.getTradeDates())
   
-    #part 2.b
+    # Get N Trades
     def getNumofTrades(self):
         return len(self._trades)
   
+    # Get N Quotes
     def getNumofQuotes(self):
         return len(self._quotes)
-     
+    
+    # Calc friction of N Trades to N Quotes
     def getTradestoQuotes(self):
         if not self.getNumofQuotes():
             return -1
         return self.getNumofTrades() / self.getNumofQuotes()
-# #     
-#     #part 2.c
-#     
-    def getTradeReturns(self, seconds):
-        return getXSecTradeReturns(self._trades, seconds)[0]
+
+    # Get Trade Returns  
+    def getTradeReturns(self):
+        return self._tradeReturns
     
-    def getTradeReturnsTimestamps(self, seconds):
-        return getXSecTradeReturns(self._trades, seconds)[1]
+    # Get timestamps for Trade Returns for plotting
+    def getTradeReturnsTimestamps(self):
+        return self._tradeTimestamps
     
-    def getMidQuoteReturns(self, seconds):
-        return getXSecMidQuoteReturns(self._quotes, seconds)[0]
+    # Get Mid-Quote Returns
+    def getMidQuoteReturns(self):
+        return self._quoteReturns
     
-    def getMidQuoteReturnsTimestamps(self, seconds):
-        return getXSecMidQuoteReturns(self._quotes, seconds)[1]
+    # Get timestamps for Mid-Quote Returns for plotting
+    def getMidQuoteReturnsTimestamps(self):
+        return self._quoteTimestamps
     
     # Mean Returns
     # Check annualization
     def _getMeanReturns(self, data):
         return np.mean( data ) 
     
-    def getTradeMeanReturns(self, seconds):
-        return self._getMeanReturns(self.getTradeReturns(seconds)) * ( 252 / len(self.getTradeDates()) )
+    def getTradeMeanReturns(self):
+        return np.mean(self._tradeReturns) * ( 252 / len(self.getTradeDates()) )
 
-    def getQuoteMeanReturns(self, seconds):
-        return self._getMeanReturns(self.getMidQuoteReturns(seconds)) * ( 252 / len(self.getQuotesDates()) )
+    def getQuoteMeanReturns(self):
+        return  np.mean(self._quoteReturns) * ( 252 / len(self.getQuotesDates()) )
     
     #Median Returns
-    def _getMedianReturns(self, data):
-        return np.median( data ) 
-    
-    def getTradeMedianReturns(self, seconds):
-        return self._getMedianReturns(self.getTradeReturns(seconds)) * ( 252 / len(self.getTradeDates()) )
+    def getTradeMedianReturns(self):
+        return np.median(self._tradeReturns) * ( 252 / len(self.getTradeDates()) )
 
-    def getQuoteMedianReturns(self, seconds):
-        return self._getMedianReturns(self.getMidQuoteReturns(seconds)) * ( 252 / len(self.getQuotesDates()) )
+    def getQuoteMedianReturns(self):
+        return np.median(self._quoteReturns) * ( 252 / len(self.getQuotesDates()) )
     
     # Std Deviations
     # Check annualization
     def _getStdReturns(self, data):
         return np.std( data ) 
     
-    def getTradeStdReturns(self, seconds):
-        return self._getStdReturns(self.getTradeReturns(seconds)) * np.sqrt(( 252 / len(self.getTradeDates())))
+    def getTradeStdReturns(self):
+        return self._getStdReturns(self._tradeReturns) * np.sqrt(( 252 / len(self.getTradeDates())))
 
-    def getMidQuoteStdReturns(self, seconds):
-        return self._getStdReturns(self.getMidQuoteReturns(seconds)) * np.sqrt(( 252 / len(self.getQuotesDates())))
+    def getMidQuoteStdReturns(self):
+        return self._getStdReturns(self._quoteReturns) * np.sqrt(( 252 / len(self.getQuotesDates())))
      
      
-### HERE
-    def getTradeMedianAbsDev(self, seconds):
-        return median_absolute_deviation( self.getTradeReturns(seconds) ) * ( 252 / len(self.getTradeDates()))
+    # Median Absolute Deviation
+    def getTradeMedianAbsDev(self):
+        return median_absolute_deviation( self._tradeReturns ) * ( 252 / len(self.getTradeDates()))
     
-    def getMidQuoteMedianAbsDev(self, seconds):
-        return median_absolute_deviation( self.getMidQuoteReturns(seconds) ) * ( 252 / len(self.getQuotesDates()))
+    def getMidQuoteMedianAbsDev(self):
+        return median_absolute_deviation( self._quoteReturns ) * ( 252 / len(self.getQuotesDates()))
      
-    def getTradeSkew(self, seconds):
-        return skew( self.getTradeReturns(seconds) ) * ( 252 / len(self.getTradeDates()))
+    # Skew
+    def getTradeSkew(self):
+        return skew( self._tradeReturns ) * ( 252 / len(self.getTradeDates()))
     
-    def getMidQuoteSkew(self, seconds):
-        return skew( self.getMidQuoteReturns(seconds) ) * ( 252 / len(self.getQuotesDates()))
+    def getMidQuoteSkew(self):
+        return skew( self._quoteReturns ) * ( 252 / len(self.getQuotesDates()))
+    
+    # Kurtosis 
+    def getTradeKurtosis(self):
+        return kurtosis( self._tradeReturns ) * ( 252 / len(self.getTradeDates()))
+    
+    def getMidQuoteKurtosis(self):
+        return kurtosis( self._quoteReturns ) * ( 252 / len(self.getQuotesDates()))
+    
+    # 10 Largest Returns
+    def get10largestTrade(self):
+        return heapq.nlargest(10, self._tradeReturns )
      
-    def getTradeKurtosis(self, seconds):
-        return kurtosis( self.getTradeReturns( seconds ) ) * ( 252 / len(self.getTradeDates()))
+    def get10largestMidQuote(self):
+        return heapq.nlargest(10, self._quoteReturns )
     
-    def getMidQuoteKurtosis(self, seconds):
-        return kurtosis( self.getMidQuoteReturns(seconds) ) * ( 252 / len(self.getQuotesDates()))
+    # 10 Smallest Return
+    def get10smallestTrade(self):
+        return heapq.nsmallest(10, self._tradeReturns )
     
-    def get10largestTrade(self, seconds):
-        return heapq.nlargest(10, self.getTradeReturns( seconds ) )
-     
-    def get10largestMidQuote(self, seconds):
-        return heapq.nlargest(10, self.getMidQuoteReturns(seconds) )
-    
-    def get10smallestTrade(self, seconds):
-        return heapq.nsmallest(10, self.getTradeReturns( seconds ) )
-    
-    def get10smallestMidQuote(self, seconds):
-        return heapq.nsmallest(10, self.getMidQuoteReturns(seconds ) )
-#     
-
-#     
+    def get10smallestMidQuote(self):
+        return heapq.nsmallest(10, self._quoteReturns )
+   

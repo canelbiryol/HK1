@@ -1,26 +1,26 @@
 import numpy as np
+import time
+import datetime
 
-def getXSecTradeReturns(data, seconds):
-    delta = 1000 * seconds
-        
+def dateStringToTS(dateString):
+    return time.mktime(datetime.datetime.strptime(str(dateString), "%Y%m%d").timetuple())
+
+def getXSecTradeReturns(data, delta):
     nRecs = len(data)
     tradeReturns = []
     timestamps = []
     
-    lastDate = int(data[0][0])
-    lastTs = int(data[0][2])
+    lastTs = dateStringToTS(int(data[0][0])) + ( int(data[0][2]) / 1000 )
     lastPrice = float(data[0][3])
 
     for startI in range( 1, nRecs ):
-        date = int(data[startI][0])
-        timestamp = int(data[startI][2])
+        timestamp = dateStringToTS(int(data[startI][0])) + ( int(data[startI][2]) / 1000 )
         price = float(data[startI][3])
             
         # check this
-        if timestamp > (lastTs + delta) or date > lastDate: 
+        if timestamp > (lastTs + delta): 
             tradeReturns.append( (price / lastPrice) - 1 )
             timestamps.append(timestamp)
-            lastDate = date
             lastTs = timestamp
             lastPrice = price
         
@@ -28,27 +28,22 @@ def getXSecTradeReturns(data, seconds):
 
 # [DATE, TICKER, TIMESTAMP, BIDPRICE, BIDSIZE, ASKPRICE, ASKSIZE]
 
-def getXSecMidQuoteReturns(data, seconds):
-    delta = 1000 * seconds
-        
-    nRecs = len(data)
-    lastDate = int(data[0][0])
-    lastTs = int(data[0][2])
+def getXSecMidQuoteReturns(data, delta): 
+    nRecs = len(data) 
+    lastTs = dateStringToTS(int(data[0][0])) + ( int(data[0][2]) / 1000 )
     lastMidQuote = (float(data[0][3]) + float(data[0][5])) / 2 
     
     #lastMidQuote = (data.getAskPrice( 0 ) + data.getBidPrice( 0 ))  / 2 
     midQuoteReturns = [] 
     timestamps = []
     for startI in range( 1, nRecs ):
-        date = int(data[startI][0])
-        timestamp = int(data[startI][2])
-        midQuote = (float(data[startI][3]) + float(data[startI][5])) / 2
+        timestamp = dateStringToTS(int(data[startI][0])) + ( int(data[startI][2]) / 1000 )
+        midQuote = (float(data[startI][3]) + float(data[startI][5])) / 2        
             
         # check this
-        if timestamp > (lastTs + delta) or date > lastDate: 
+        if timestamp > (lastTs + delta): 
             midQuoteReturns.append( (midQuote / lastMidQuote) - 1 )
             timestamps.append(timestamp)
-            lastDate = date
             lastTs = timestamp
             lastMidQuote = midQuote
             
