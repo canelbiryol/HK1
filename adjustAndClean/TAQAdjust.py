@@ -83,3 +83,9 @@ class TAQAdjust(object):
     # For the purpose of unit testing
     def setVolMult(self, date, val):
         self._Mult.loc[date, 1] = val
+        
+    def storeAdjustedTrades(self, trades, directory):
+        print("TODO")
+        
+    def storeAdjustedQuotes(self, quotes, directory):
+        print("TODO")

@@ -67,6 +67,8 @@ class TAQCleaner(object):
         npytoRemove = np.array(toRemove)
         npytoRemove = npytoRemove.astype(int)
         npytoRemove = np.unique(npytoRemove)
+        npytoRemove = np.sort(npytoRemove)
+        npytoRemove = np.flip(npytoRemove, axis=0)
         return(npytoRemove)
                     
     def cleanTradesIndices(self):
@@ -108,12 +110,13 @@ class TAQCleaner(object):
             # Test criterion
             for j in range(0, self._k):
                 if (abs(rollWindow[j] - rollMean) >= 2 * rollStd + self._gamma * rollMean):
-                    self._trades
                     toRemove.append(leftIndex + j)
-                    
+
         npytoRemove = np.array(toRemove)
         npytoRemove = npytoRemove.astype(int)
         npytoRemove = np.unique(npytoRemove)
+        npytoRemove = np.sort(npytoRemove)
+        npytoRemove = np.flip(npytoRemove, axis=0)
         return(npytoRemove)
         
     def storeCleanedTrades(self, trades, directory):
