@@ -21,7 +21,6 @@ class StackData(object):
 
         # Ticker searched
         self._ticker = ticker
-        print(self._datesQ)
 
         # Find sizes to allocate the right space
         lengthQ = 0
