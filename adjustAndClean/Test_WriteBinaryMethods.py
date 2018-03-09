@@ -18,8 +18,8 @@ class Test_WriteBinaryMethods(unittest.TestCase):
         stackedQuotes = np.array([['20070620', 'IBM', 34241000, 106.5, 85200.0, 106.1, 8200.0], ['20070621', 'IBM', 57597000, 106.5, 85200.0, 106.1, 800.0], ['20070621', 'IBM', 57597000, 106.5, 85200.0, 106.1, 800.0], ['20070621', 'IBM', 57597000, 106.5, 85200.0, 106.1, 800.0], ['20070621', 'IBM', 57597000, 106.5, 85200.0, 106.1, 800.0]])
         
         # Directories where to store
-        filepathadj = '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/adj'
-        filepathcln = '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/cln'
+        filepathadj = '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/adj/'
+        filepathcln = '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/cln/'
         
         # Write after reading and adjusting
         adjuster = TAQAdjust( stackedQuotes, stackedTrades, s_p500 )
@@ -38,10 +38,10 @@ class Test_WriteBinaryMethods(unittest.TestCase):
         cleaner.storeCleanedTrades(filepathcln)
         
         # Read results
-        readerclnQ = TAQQuotesReader( '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/cln/quotes/IBM_quotes.binRQ' )
-        readerclnT = TAQTradesReader( '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/cln/trades/IBM_trades.binRT' )
-        readeradjQ = TAQQuotesReader( '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/adj/quotes/IBM_quotes.binRQ' )
-        readeradjT = TAQTradesReader( '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/adj/trades/IBM_trades.binRT' )
+        readerclnQ = TAQQuotesReader( '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/cln/quotes/20070620/IBM_quotes.binRQ' )
+        readerclnT = TAQTradesReader( '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/cln/trades/20070620/IBM_trades.binRT' )
+        readeradjQ = TAQQuotesReader( '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/adj/quotes/20070620/IBM_quotes.binRQ' )
+        readeradjT = TAQTradesReader( '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/adj/trades/20070620/IBM_trades.binRT' )
         
         # Using previously tested readers, test for expected values
         self.assertEquals( readerclnQ.getN(), 5 )

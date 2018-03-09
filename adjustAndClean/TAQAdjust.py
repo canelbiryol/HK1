@@ -97,8 +97,8 @@ class TAQAdjust(object):
         if( not access( filepath, R_OK ) ):
             raise Exception( "You don't have access to directory %s" % filepath )
         
-        filepath = filepath + "trades/"
-        
+        filepath = filepath  + "trades/" + self._trades[0,0] + "/"
+
         if not os.path.exists(filepath):
             os.makedirs(filepath)
         
@@ -128,9 +128,9 @@ class TAQAdjust(object):
             raise Exception( "%s does not exist" % filepath )
         if( not access( filepath, R_OK ) ):
             raise Exception( "You don't have access to directory %s" % filepath )
-
-        filepath = filepath + "quotes/"
         
+        filepath = filepath  + "quotes/" + self._quotes[0,0] + "/"
+
         if not os.path.exists(filepath):
             os.makedirs(filepath)
 
