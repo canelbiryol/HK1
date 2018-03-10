@@ -6,8 +6,8 @@ from copy import deepcopy
 def plotSeries(series1, series2, index_price, ticker, title, outputFile):
     fig = plt.figure()
     
-    lblQ = ticker + ' before'
-    lblT = ticker + ' after'
+    lblQ = ticker + ' after'
+    lblT = ticker + ' before'
     
     plt.plot(series1[:,index_price].astype(float), label = lblQ)
     plt.plot(series2[:,index_price].astype(float), label = lblT) 

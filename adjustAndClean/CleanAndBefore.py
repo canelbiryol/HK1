@@ -8,8 +8,8 @@ import numpy as np
 def plotSeries(series1, series2, index_price, ticker, title, outputFile):
     fig = plt.figure()
     
-    lblQ = ticker + ' before'
-    lblT = ticker + ' after'
+    lblQ = ticker + ' after'
+    lblT = ticker + ' before'
     
     plt.plot(series1[:,index_price].astype(float), label = lblQ)
     plt.plot(series2[:,index_price].astype(float), label = lblT) 
@@ -63,5 +63,5 @@ if __name__ == '__main__':
     s_p500 = '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/s_p500.xlsx'
     baseDir = '/media/louis/DATA/Courant_dataset_matlab/R'
     filepathcln = '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/plots/'
-    ticker = 'MSFT'
+    ticker = 'GOOG'
     plotCleanAndBefore(s_p500, baseDir, filepathcln, ticker)
