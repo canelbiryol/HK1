@@ -47,14 +47,7 @@ def printStats(trades, quotes, seconds):
 
 def plotReturns(taqstats, title, outputFile):
     fig = plt.figure()
-#     ax=plt.gca()
-#     xfmt = md.DateFormatter('%Y-%m-%d %H:%M:%S')
-#     ax.xaxis.set_major_formatter(xfmt)
-#     x = [datetime.fromtimestamp(element) for element in taqstats.getTradeReturnsTimestamps()]
-#     x = taqstats.getTradeReturnsTimestamps()
     plt.plot(taqstats.getTradeReturns(), label = 'Trades')
-#     x = [datetime.fromtimestamp(element) for element in taqstats.getMidQuoteReturnsTimestamps()]
-#     x = taqstats.getMidQuoteReturnsTimestamps()
     plt.plot(taqstats.getMidQuoteReturns(), label = 'Mid-Quotes') 
     plt.gcf().autofmt_xdate()
     plt.title(title)
@@ -68,14 +61,18 @@ if __name__ == '__main__':
     baseDir = "/Users/canelbiryol/R"
     #baseDir = "/Users/canelbiryol/Documents/SampleTAQ"
     startDate = "20070620"
-    endDate = "20070920"
-    ticker = 'MSFT'
+    endDate = "20070621"
+    #ticker = 'MSFT'
+    #ticker = 'GOOG'
     #ticker = 'IBM'
+    ticker = 'SUNW'
     seconds = 60
-    k = 45
-    gamma = 0.02
+    kT = 45
+    gammaT = 0.02
+    kQ = 55
+    gammaQ = 0.0175
     
-    print(str(ticker) + ", " + str(seconds) + " seconds, k: " + str(k) + ", gamma: " + str(gamma))
+    print(str(ticker) + ", " + str(seconds) + " seconds, kT: " + str(kT) + ", gammaT: " + str(gammaT), ", kQ: " + str(kQ) + ", gammaQ: " + str(gammaQ))
     startTime = time.time()
     print("* Started at {:s}".format(time.ctime()))
     
@@ -99,53 +96,55 @@ if __name__ == '__main__':
     print("* Stacked at {:02f} secs".format(time.time() - startTime))
     
     ### Adjust Data
-    adjuster = TAQAdjust( quotes, trades, ticker, s_p500 )    
+    adjuster = TAQAdjust( quotes, trades, s_p500 )    
     adjuster.adjustQuote()
     adjuster.adjustTrade()
     
     # Get results
     quotes = adjuster.getStackedQuotes()
     trades = adjuster.getStackedTrades()
-    
+
     print("* Adjusted at {:02f} secs".format(time.time() - startTime))
-     
+      
     print("----------------------------------------------------------------------")
     print("---------------- Stats for Adjusted but Unclean Data ------------------")
     print("----------------------------------------------------------------------")
     taqstats = printStats(trades, quotes, seconds)
-     
+      
     # Plot Trade and Mid-Quote Returns
     title = str(seconds) + ' seconds Trade and Mid-Quote Returns for ' + ticker + '\nwith the Adjusted Data'
     outputFile = "/Users/canelbiryol/Figs/" + ticker + "_" + str(seconds) + "sec_adjusted.png"
     plotReturns(taqstats, title, outputFile)
-    
+     
     ### Clean Data
-    cleaner = TAQCleaner(quotes, trades, k, gamma )
-    
-    
+    cleaner = TAQCleaner(quotes, trades, kT, gammaT, kQ, gammaQ )
+     
+     
     # Get results
     quotes = np.delete(quotes, cleaner.cleanQuotesIndices(), axis = 0)
     trades = np.delete(trades, cleaner.cleanTradesIndices(), axis = 0)
-    
+     
     print("* Cleaned at {:02f} secs".format(time.time() - startTime))
-    
+     
     print("----------------------------------------------------------------------")
     print("---------------- Stats for Adjusted and Clean Data ----------------")
     print("----------------------------------------------------------------------")
     taqstats = printStats(trades, quotes, seconds)
-    
+     
     # Plot Trade and Mid-Quote Returns
-    title = '{:d} seconds Trade and Mid-Quote Returns for {:s}\nwith the Adjusted and Cleaned Data. ( k: {:d}, gamma: {:f} )'.format(
+    title = '{:d} seconds Trade and Mid-Quote Returns for {:s}\nwith the Adjusted and Cleaned Data. ( kT: {:d}, gT: {:f}, kQ: {:d}, gQ: {:f} )'.format(
             seconds,
             ticker,
-            k,
-            gamma
+            kT,
+            gammaT,
+            kQ,
+            gammaQ
         )
-    
+     
     outputFile = "/Users/canelbiryol/Figs/" + ticker + "_" + str(seconds) + "sec_adjusted_clean.png"
     plotReturns(taqstats, title, outputFile)
-     
+      
     # run your code
     endTime = time.time()
     print("* Ended at {:02f} secs".format((endTime - startTime)))
-    
+     
