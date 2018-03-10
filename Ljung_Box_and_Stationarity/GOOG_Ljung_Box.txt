@@ -1,0 +1,74 @@
+('The Ljung-Box test statistic for lag number', 20, 'is', 1.0, '.')
+('Quantile for', 60, 'second trades is', 1.0)
+66434
+('The Ljung-Box test statistic for lag number', 20, 'is', 1.0, '.')
+('Quantile for', 120, 'second trades is', 1.0)
+44289
+('The Ljung-Box test statistic for lag number', 20, 'is', 1.0, '.')
+('Quantile for', 180, 'second trades is', 1.0)
+33217
+('The Ljung-Box test statistic for lag number', 20, 'is', 1.0, '.')
+('Quantile for', 240, 'second trades is', 1.0)
+26573
+('The Ljung-Box test statistic for lag number', 20, 'is', 1.0, '.')
+('Quantile for', 300, 'second trades is', 1.0)
+22144
+('The Ljung-Box test statistic for lag number', 20, 'is', 1.0, '.')
+('Quantile for', 360, 'second trades is', 1.0)
+18981
+('The Ljung-Box test statistic for lag number', 20, 'is', 0.9999999999996162, '.')
+('Quantile for', 420, 'second trades is', 0.9999999999996162)
+16608
+('The Ljung-Box test statistic for lag number', 20, 'is', 0.99999998915574961, '.')
+('Quantile for', 480, 'second trades is', 0.99999998915574961)
+14763
+('The Ljung-Box test statistic for lag number', 20, 'is', 0.99999999962832453, '.')
+('Quantile for', 540, 'second trades is', 0.99999999962832453)
+13286
+('The Ljung-Box test statistic for lag number', 20, 'is', 0.9999963037395041, '.')
+('Quantile for', 600, 'second trades is', 0.9999963037395041)
+12079
+('The Ljung-Box test statistic for lag number', 20, 'is', 0.99999921213054821, '.')
+('Quantile for', 660, 'second trades is', 0.99999921213054821)
+11072
+('The Ljung-Box test statistic for lag number', 20, 'is', 0.99925017666157223, '.')
+('Quantile for', 720, 'second trades is', 0.99925017666157223)
+10220
+('The Ljung-Box test statistic for lag number', 20, 'is', 0.99922816781767854, '.')
+('Quantile for', 780, 'second trades is', 0.99922816781767854)
+9490
+('The Ljung-Box test statistic for lag number', 20, 'is', 0.95134644385041456, '.')
+('Quantile for', 840, 'second trades is', 0.95134644385041456)
+8857
+('The Ljung-Box test statistic for lag number', 20, 'is', 0.99855026302481731, '.')
+('Quantile for', 900, 'second trades is', 0.99855026302481731)
+8304
+('The Ljung-Box test statistic for lag number', 20, 'is', 0.96465788258887575, '.')
+('Quantile for', 960, 'second trades is', 0.96465788258887575)
+7815
+('The Ljung-Box test statistic for lag number', 20, 'is', 0.9999273007253946, '.')
+('Quantile for', 1020, 'second trades is', 0.9999273007253946)
+7381
+('The Ljung-Box test statistic for lag number', 20, 'is', 0.99999908729401921, '.')
+('Quantile for', 1080, 'second trades is', 0.99999908729401921)
+6993
+('The Ljung-Box test statistic for lag number', 20, 'is', 0.99995477441112357, '.')
+('Quantile for', 1140, 'second trades is', 0.99995477441112357)
+6643
+('The Ljung-Box test statistic for lag number', 20, 'is', 0.99982551517474461, '.')
+('Quantile for', 1200, 'second trades is', 0.99982551517474461)
+6327
+('The Ljung-Box test statistic for lag number', 20, 'is', 0.99636448892920526, '.')
+('Quantile for', 1260, 'second trades is', 0.99636448892920526)
+6039
+('The Ljung-Box test statistic for lag number', 20, 'is', 0.99986029905902796, '.')
+('Quantile for', 1320, 'second trades is', 0.99986029905902796)
+5776
+('The Ljung-Box test statistic for lag number', 20, 'is', 0.96970665540486645, '.')
+('Quantile for', 1380, 'second trades is', 0.96970665540486645)
+5536
+('The Ljung-Box test statistic for lag number', 20, 'is', 0.99953531628709469, '.')
+('Quantile for', 1440, 'second trades is', 0.99953531628709469)
+5314
+('The Ljung-Box test statistic for lag number', 20, 'is', 0.96991631187048621, '.')
+('Quantile for', 1500, 'second trades is', 0.96991631187048621)
