@@ -53,7 +53,13 @@ class StackData(object):
             # Append the day data [DATE, TICKER, TIMESTAMP, BIDPRICE, BIDSIZE, ASKPRICE, ASKSIZE]
             length = quoteFile.getN()
             for i in range(0, length):
-                self._stackedQuotes[l + i] = np.array([date, self._ticker, int(quoteFile.getTimestamp(i)), float(quoteFile.getBidPrice(i)), float(quoteFile.getBidSize(i)), float(quoteFile.getAskPrice(i)), float(quoteFile.getAskSize(i))])
+                self._stackedQuotes[l+i, 0] = date
+                self._stackedQuotes[l+i, 1] = self._ticker
+                self._stackedQuotes[l+i, 2] = int(quoteFile.getTimestamp(i))
+                self._stackedQuotes[l+i, 3] = float(quoteFile.getBidPrice(i))
+                self._stackedQuotes[l+i, 4] = float(quoteFile.getBidSize(i))
+                self._stackedQuotes[l+i, 5] = float(quoteFile.getAskPrice(i))
+                self._stackedQuotes[l+i, 6] = float(quoteFile.getAskSize(i))
             l += length
             
     # Trades
@@ -67,7 +73,11 @@ class StackData(object):
             # Append the day data [DATE, TICKER, TIMESTAMP, PRICE, SIZE]
             length = tradeFile.getN()
             for i in range(0, length):
-                self._stackedTrades[l + i] = np.array([date, self._ticker, int(tradeFile.getTimestamp(i)), float(tradeFile.getPrice(i)), float(tradeFile.getSize(i))])
+                self._stackedTrades[l+i, 0] = date
+                self._stackedTrades[l+i, 1] = self._ticker
+                self._stackedTrades[l+i, 2] = int(tradeFile.getTimestamp(i))
+                self._stackedTrades[l+i, 3] = float(tradeFile.getPrice(i))
+                self._stackedTrades[l+i, 4] = float(tradeFile.getSize(i))
             l += length
             
     # Returns the array of stacked adjusted trades   

@@ -13,7 +13,7 @@ class Test_StackData(unittest.TestCase):
         ticker = "IBM"
 
         # Calls to StackData methods
-        loopStack = StackData( baseDir, "20070101" , "20070909", ticker )
+        loopStack = StackData( baseDir, "20070620" , "20070625", ticker )
         loopStack.addTrades()
         loopStack.addQuotes()
         
