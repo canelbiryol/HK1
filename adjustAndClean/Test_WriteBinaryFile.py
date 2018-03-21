@@ -10,8 +10,8 @@ class Test_WriteBinaryFile(unittest.TestCase):
     '''
 
     def test1(self):
-        stackedTrades = np.array([['20070620', 'IBM', 34241000, 106.5, 85200.0], ['20070621', 'IBM', 57596000, 106.61000061035156, 500.0], ['20070621', 'IBM', 57596000, 106.61000061035156, 200.0], ['20070621', 'IBM', 57597000, 106.5999984741211, 200.0], ['20070621', 'IBM', 57597000, 106.5999984741211, 200.0], ['20070621', 'IBM', 57597000, 106.5999984741211, 200.0]])
-        stackedQuotes = np.array([['20070620', 'IBM', 34241000, 106.5, 85200.0, 106.1, 8200.0], ['20070621', 'IBM', 57597000, 106.5, 85200.0, 106.1, 800.0], ['20070621', 'IBM', 57597000, 106.5, 85200.0, 106.1, 800.0], ['20070621', 'IBM', 57597000, 106.5, 85200.0, 106.1, 800.0], ['20070621', 'IBM', 57597000, 106.5, 85200.0, 106.1, 800.0]])
+        stackedTrades = np.array([['20070620', 34241000, 106.5, 85200.0], ['20070621', 57596000, 106.61000061035156, 500.0], ['20070621', 57596000, 106.61000061035156, 200.0], ['20070621', 57597000, 106.5999984741211, 200.0], ['20070621', 57597000, 106.5999984741211, 200.0], ['20070621', 57597000, 106.5999984741211, 200.0]])
+        stackedQuotes = np.array([['20070620', 34241000, 106.5, 85200.0, 106.1, 8200.0], ['20070621', 57597000, 106.5, 85200.0, 106.1, 800.0], ['20070621', 57597000, 106.5, 85200.0, 106.1, 800.0], ['20070621', 57597000, 106.5, 85200.0, 106.1, 800.0], ['20070621', 57597000, 106.5, 85200.0, 106.1, 800.0]])
         
         filePathNameT = '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/test.binRT'
         filePathNameQ = '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/test.binRQ'
@@ -25,13 +25,13 @@ class Test_WriteBinaryFile(unittest.TestCase):
             f.write(struct.pack(">i", N))
             # Write timestamps
             for i in range(N):
-                f.write(struct.pack(">i", int(stackedTrades[i,2])))
+                f.write(struct.pack(">i", int(stackedTrades[i,1])))
             # Write sizes (int... but could be float with multipliers)
             for i in range(N):
-                f.write(struct.pack(">i", int(float(stackedTrades[i,4]))))
+                f.write(struct.pack(">i", int(float(stackedTrades[i,3]))))
             # Write prices (floats)
             for i in range(N):
-                f.write(struct.pack(">f", float(stackedTrades[i,3])))
+                f.write(struct.pack(">f", float(stackedTrades[i,2])))
         
         # Try reading trade file
         with gzip.open( filePathNameT, 'rb') as f:
@@ -50,19 +50,19 @@ class Test_WriteBinaryFile(unittest.TestCase):
             f.write(struct.pack(">i", N))
             # Write timestamps
             for i in range(N):
-                f.write(struct.pack(">i", int(stackedQuotes[i,2])))
+                f.write(struct.pack(">i", int(stackedQuotes[i,1])))
             # Write bid sizes (int... but could be float with multipliers)
             for i in range(N):
-                f.write(struct.pack(">i", int(float(stackedQuotes[i,4]))))
+                f.write(struct.pack(">i", int(float(stackedQuotes[i,3]))))
             # Write bid prices (floats)
             for i in range(N):
-                f.write(struct.pack(">f", float(stackedQuotes[i,3])))
+                f.write(struct.pack(">f", float(stackedQuotes[i,2])))
             # Write ask sizes (int... but could be float with multipliers)
             for i in range(N):
-                f.write(struct.pack(">i", int(float(stackedQuotes[i,6]))))
+                f.write(struct.pack(">i", int(float(stackedQuotes[i,5]))))
             # Write ask prices (floats)
             for i in range(N):
-                f.write(struct.pack(">f", float(stackedQuotes[i,5])))
+                f.write(struct.pack(">f", float(stackedQuotes[i,4])))
                 
         # Try reading quote file
         with gzip.open( filePathNameQ, 'rb') as f:

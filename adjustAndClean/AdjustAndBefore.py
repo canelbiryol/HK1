@@ -37,7 +37,7 @@ def plotAdjustAndBefore(s_p500, baseDir, filePathcadj, ticker):
     print('Got stacked results', ticker)
 
     # Adjust
-    adjuster = TAQAdjust( quotes, trades, s_p500 )
+    adjuster = TAQAdjust( quotes, trades, ticker, s_p500 )
     adjuster.adjustQuote()
     adjuster.adjustTrade()
     print('Finished adjustment', ticker)

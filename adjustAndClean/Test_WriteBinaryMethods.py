@@ -14,15 +14,15 @@ class Test_WriteBinaryMethods(unittest.TestCase):
     def test1(self):
         # Stocks and trades
         s_p500 = '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/s_p500.xlsx'
-        stackedTrades = np.array([['20070620', 'IBM', 34241000, 106.5, 85200.0], ['20070621', 'IBM', 57596000, 106.61000061035156, 500.0], ['20070621', 'IBM', 57596000, 106.61000061035156, 200.0], ['20070621', 'IBM', 57597000, 106.5999984741211, 200.0], ['20070621', 'IBM', 57597000, 106.5999984741211, 200.0], ['20070621', 'IBM', 57597000, 106.5999984741211, 200.0]])
-        stackedQuotes = np.array([['20070620', 'IBM', 34241000, 106.5, 85200.0, 106.1, 8200.0], ['20070621', 'IBM', 57597000, 106.5, 85200.0, 106.1, 800.0], ['20070621', 'IBM', 57597000, 106.5, 85200.0, 106.1, 800.0], ['20070621', 'IBM', 57597000, 106.5, 85200.0, 106.1, 800.0], ['20070621', 'IBM', 57597000, 106.5, 85200.0, 106.1, 800.0]])
+        stackedTrades = np.array([['20070620', 34241000, 106.5, 85200.0], ['20070621', 57596000, 106.61000061035156, 500.0], ['20070621', 57596000, 106.61000061035156, 200.0], ['20070621', 57597000, 106.5999984741211, 200.0], ['20070621', 57597000, 106.5999984741211, 200.0], ['20070621', 57597000, 106.5999984741211, 200.0]])
+        stackedQuotes = np.array([['20070620', 34241000, 106.5, 85200.0, 106.1, 8200.0], ['20070621', 57597000, 106.5, 85200.0, 106.1, 800.0], ['20070621', 57597000, 106.5, 85200.0, 106.1, 800.0], ['20070621', 57597000, 106.5, 85200.0, 106.1, 800.0], ['20070621', 57597000, 106.5, 85200.0, 106.1, 800.0]])
         
         # Directories where to store
         filepathadj = '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/adj/'
         filepathcln = '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/cln/'
         
         # Write after reading and adjusting
-        adjuster = TAQAdjust( stackedQuotes, stackedTrades, s_p500 )
+        adjuster = TAQAdjust( stackedQuotes, stackedTrades, 'IBM', s_p500 )
         adjuster.setPriceMult("20070621", 0.5)
         adjuster.setVolMult("20070621", 0.25)
         adjuster.adjustQuote()
@@ -31,7 +31,7 @@ class Test_WriteBinaryMethods(unittest.TestCase):
         adjuster.storeAdjustedTrades(filepathadj)
         
         # Write after reading and cleaning
-        cleaner = TAQCleaner(stackedQuotes, stackedTrades)
+        cleaner = TAQCleaner(stackedQuotes, stackedTrades, 'IBM')
         stackedQuotes = np.delete(stackedQuotes, cleaner.cleanQuotesIndices(), axis = 0)
         stackedTrades = np.delete(stackedTrades, cleaner.cleanTradesIndices(), axis = 0)
         cleaner.storeCleanedQuotes(filepathcln)

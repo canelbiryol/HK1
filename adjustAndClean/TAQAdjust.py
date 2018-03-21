@@ -14,7 +14,7 @@ class TAQAdjust(object):
     then no adjustment is necessary.
     '''
 
-    def __init__(self, stackedQuotes, stackedTrades, s_p500):
+    def __init__(self, stackedQuotes, stackedTrades, ticker, s_p500):
         '''
         stackedQuotes: Array containing quotes (from StackData)
         stackedTrades: Array containing trades (from StackData)
@@ -24,7 +24,7 @@ class TAQAdjust(object):
         self._s_p500xls = pd.read_excel(open(s_p500,'rb'), sheet_name='WRDS')
         self._quotes = stackedQuotes
         self._trades = stackedTrades
-        self._ticker = self._trades[0,1]
+        self._ticker = ticker
         
         # Retrieve quote multipliers from the excel file, and map them to each date
         allDates = []
@@ -112,13 +112,13 @@ class TAQAdjust(object):
             f.write(struct.pack(">i", N))
             # Write timestamps
             for i in range(N):
-                f.write(struct.pack(">i", int(self._trades[i,2])))
+                f.write(struct.pack(">i", int(self._trades[i,1])))
             # Write sizes (int... but could be float with multipliers)
             for i in range(N):
-                f.write(struct.pack(">i", int(float(self._trades[i,4]))))
+                f.write(struct.pack(">i", int(float(self._trades[i,3]))))
             # Write prices (floats)
             for i in range(N):
-                f.write(struct.pack(">f", float(self._trades[i,3])))
+                f.write(struct.pack(">f", float(self._trades[i,2])))
         
     def storeAdjustedQuotes(self, filepath):
 
@@ -144,16 +144,16 @@ class TAQAdjust(object):
             f.write(struct.pack(">i", N))
             # Write timestamps
             for i in range(N):
-                f.write(struct.pack(">i", int(self._quotes[i,2])))
+                f.write(struct.pack(">i", int(self._quotes[i,1])))
             # Write bid sizes (int... but could be float with multipliers)
             for i in range(N):
-                f.write(struct.pack(">i", int(float(self._quotes[i,4]))))
+                f.write(struct.pack(">i", int(float(self._quotes[i,3]))))
             # Write bid prices (floats)
             for i in range(N):
-                f.write(struct.pack(">f", float(self._quotes[i,3])))
+                f.write(struct.pack(">f", float(self._quotes[i,2])))
             # Write ask sizes (int... but could be float with multipliers)
             for i in range(N):
-                f.write(struct.pack(">i", int(float(self._quotes[i,6]))))
+                f.write(struct.pack(">i", int(float(self._quotes[i,5]))))
             # Write ask prices (floats)
             for i in range(N):
-                f.write(struct.pack(">f", float(self._quotes[i,5])))
+                f.write(struct.pack(">f", float(self._quotes[i,4])))

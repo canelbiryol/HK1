@@ -33,13 +33,13 @@ trades = stack.getStackedTrades()
 print('Got results AAPL')
             
 # Adjust
-adjuster = TAQAdjust( quotes, trades, s_p500 )
+adjuster = TAQAdjust( quotes, trades, ticker1, s_p500 )
 adjuster.adjustQuote()
 adjuster.adjustTrade()
 print('Adjusted AAPL')
             
 # Clean
-cleaner = TAQCleaner(quotes, trades)
+cleaner = TAQCleaner(quotes, trades, ticker1)
 quotes = np.delete(quotes, cleaner.cleanQuotesIndices(), axis = 0)
 trades = np.delete(trades, cleaner.cleanTradesIndices(), axis = 0)
 print('Cleaned AAPL')

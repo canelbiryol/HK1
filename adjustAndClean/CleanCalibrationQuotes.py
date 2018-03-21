@@ -50,10 +50,12 @@ for k in k_test:
     j = 0
     for gamma in gamma_test:
         for s in stacks:
+            tckr = s.getTicker()
+            print(tckr)
             quotes = s.getStackedQuotes()
             if (quotes.size == 0):
                 continue
-            cleaner = TAQCleaner(quotes, [], k, gamma)
+            cleaner = TAQCleaner(quotes, [], tckr, k, gamma)
             quotes = np.delete(quotes, cleaner.cleanQuotesIndices(), axis = 0)
             skews[i,j] += skew(np.array(quotes[:,-2].astype(np.float)))
             kurtosiss[i,j] += kurtosis(np.array(quotes[:,-2].astype(np.float)))

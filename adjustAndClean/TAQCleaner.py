@@ -13,14 +13,14 @@ class TAQCleaner(object):
     Default values for k and gamma were those given by the simulation (cf. CleanCalibration.py)
     '''
 
-    def __init__(self, stackedQuotes, stackedTrades, kT=45, gammaT=0.02, kQ=55, gammaQ=0.0175):
+    def __init__(self, stackedQuotes, stackedTrades, ticker, kT=45, gammaT=0.02, kQ=55, gammaQ=0.0175):
         '''
         Constructor: initialize attributes
         '''
         # Instantiate attributes
         self._quotes = stackedQuotes
         self._trades = stackedTrades
-        self._ticker = stackedQuotes[0,1]
+        self._ticker = ticker
         
         # Suggested initial parameters, to calibrate
         self._kT = kT
@@ -144,13 +144,13 @@ class TAQCleaner(object):
             f.write(struct.pack(">i", N))
             # Write timestamps
             for i in range(N):
-                f.write(struct.pack(">i", int(self._trades[i,2])))
+                f.write(struct.pack(">i", int(self._trades[i,1])))
             # Write sizes (int... but could be float with multipliers)
             for i in range(N):
-                f.write(struct.pack(">i", int(float(self._trades[i,4]))))
+                f.write(struct.pack(">i", int(float(self._trades[i,3]))))
             # Write prices (floats)
             for i in range(N):
-                f.write(struct.pack(">f", float(self._trades[i,3])))
+                f.write(struct.pack(">f", float(self._trades[i,2])))
 
     def storeCleanedQuotes(self, filepath):
 
@@ -176,17 +176,17 @@ class TAQCleaner(object):
             f.write(struct.pack(">i", N))
             # Write timestamps
             for i in range(N):
-                f.write(struct.pack(">i", int(self._quotes[i,2])))
+                f.write(struct.pack(">i", int(self._quotes[i,1])))
             # Write bid sizes (int... but could be float with multipliers)
             for i in range(N):
-                f.write(struct.pack(">i", int(float(self._quotes[i,4]))))
+                f.write(struct.pack(">i", int(float(self._quotes[i,3]))))
             # Write bid prices (floats)
             for i in range(N):
-                f.write(struct.pack(">f", float(self._quotes[i,3])))
+                f.write(struct.pack(">f", float(self._quotes[i,2])))
             # Write ask sizes (int... but could be float with multipliers)
             for i in range(N):
-                f.write(struct.pack(">i", int(float(self._quotes[i,6]))))
+                f.write(struct.pack(">i", int(float(self._quotes[i,5]))))
             # Write ask prices (floats)
             for i in range(N):
-                f.write(struct.pack(">f", float(self._quotes[i,5])))
+                f.write(struct.pack(">f", float(self._quotes[i,4])))
         

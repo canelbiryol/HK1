@@ -50,10 +50,12 @@ for k in k_test:
     j = 0
     for gamma in gamma_test:
         for s in stacks:
+            tckr = s.getTicker()
+            print(tckr)
             trades = s.getStackedTrades()
             if (trades.size == 0):
                 continue
-            cleaner = TAQCleaner([], trades, k, gamma)
+            cleaner = TAQCleaner([], trades, tckr, k, gamma)
             trades = np.delete(trades, cleaner.cleanTradesIndices(), axis = 0)
             skews[i,j] += skew(np.array(trades[:,-2].astype(np.float)))
             kurtosiss[i,j] += kurtosis(np.array(trades[:,-2].astype(np.float)))

@@ -10,12 +10,12 @@ def getXSecTradeReturns(data, delta):
     tradeReturns = []
     timestamps = []
     
-    lastTs = dateStringToTS(int(data[0][0])) + ( int(data[0][2]) / 1000 )
-    lastPrice = float(data[0][3])
+    lastTs = dateStringToTS(int(data[0][0])) + ( int(data[0][1]) / 1000 )
+    lastPrice = float(data[0][2])
 
     for startI in range( 1, nRecs ):
-        timestamp = dateStringToTS(int(data[startI][0])) + ( int(data[startI][2]) / 1000 )
-        price = float(data[startI][3])
+        timestamp = dateStringToTS(int(data[startI][0])) + ( int(data[startI][1]) / 1000 )
+        price = float(data[startI][2])
             
         # check this
         if timestamp > (lastTs + delta): 
@@ -30,15 +30,15 @@ def getXSecTradeReturns(data, delta):
 
 def getXSecMidQuoteReturns(data, delta): 
     nRecs = len(data) 
-    lastTs = dateStringToTS(int(data[0][0])) + ( int(data[0][2]) / 1000 )
-    lastMidQuote = (float(data[0][3]) + float(data[0][5])) / 2 
+    lastTs = dateStringToTS(int(data[0][0])) + ( int(data[0][1]) / 1000 )
+    lastMidQuote = (float(data[0][2]) + float(data[0][4])) / 2 
     
     #lastMidQuote = (data.getAskPrice( 0 ) + data.getBidPrice( 0 ))  / 2 
     midQuoteReturns = [] 
     timestamps = []
     for startI in range( 1, nRecs ):
-        timestamp = dateStringToTS(int(data[startI][0])) + ( int(data[startI][2]) / 1000 )
-        midQuote = (float(data[startI][3]) + float(data[startI][5])) / 2        
+        timestamp = dateStringToTS(int(data[startI][0])) + ( int(data[startI][1]) / 1000 )
+        midQuote = (float(data[startI][2]) + float(data[startI][4])) / 2        
             
         # check this
         if timestamp > (lastTs + delta): 

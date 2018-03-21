@@ -36,7 +36,7 @@ def plotCleanAndBefore(s_p500, baseDir, filePathcln, ticker):
     print('Got stacked results', ticker)
 
     # Adjustment
-    adjuster = TAQAdjust( quotes, trades, s_p500 )
+    adjuster = TAQAdjust( quotes, trades, ticker, s_p500 )
     adjuster.adjustQuote()
     adjuster.adjustTrade()
     quotesbefore = deepcopy(quotes)
@@ -44,7 +44,7 @@ def plotCleanAndBefore(s_p500, baseDir, filePathcln, ticker):
     print('Finished adjustment', ticker)
 
     # Cleaning
-    cleaner = TAQCleaner( quotes, trades )
+    cleaner = TAQCleaner( quotes, trades, ticker )
     quotes = np.delete(quotes, cleaner.cleanQuotesIndices(), axis = 0)
     trades = np.delete(trades, cleaner.cleanTradesIndices(), axis = 0)
     print('Finished cleaning', ticker)
