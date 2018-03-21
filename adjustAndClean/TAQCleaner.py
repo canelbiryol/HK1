@@ -46,7 +46,7 @@ class TAQCleaner(object):
         #minTickDiff = min(abs(np.min(askIncrements)), abs(np.min(bidIncrements)))
         
         # Midpoints
-        midList = 0.5 * (np.array(self._quotes[0:length,-4].astype(np.float)) - np.array(self._quotes[0:length,-2].astype(np.float)))
+        midList = 0.5 * (np.array(self._quotes[0:length,-4].astype(np.float)) + np.array(self._quotes[0:length,-2].astype(np.float)))
         
         for i in range(0,length):
             leftIndex = math.floor(i - self._kQ / 2)
