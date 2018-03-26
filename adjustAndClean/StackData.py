@@ -61,7 +61,7 @@ class StackData(object):
                 self._stackedQuotes[l+i, 5] = float(quoteFile.getAskSize(i))
             l += length
         
-        print(self.safely_reduce_dtype(self._stackedQuotes))
+        #print(self.safely_reduce_dtype(self._stackedQuotes))
             
     # Trades
     def addTrades(self):
@@ -107,6 +107,4 @@ class StackData(object):
         new_dtype = orig_dtype + str(mx * 8)
         print(np.unique(types))
         return new_dtype # or converts the pandas.Series by ser.astype(new_dtype)
-
-
 

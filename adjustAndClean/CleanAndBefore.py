@@ -25,7 +25,7 @@ def plotSeries(series1, series2, index_price, ticker, title, outputFile):
 
 def plotCleanAndBefore(s_p500, baseDir, filePathcln, ticker):
     # Stack
-    stack = StackData(baseDir, '20070625', '20070629', ticker)
+    stack = StackData(baseDir, '20070625', '20070929', ticker)
     stack.addQuotes()
     stack.addTrades()
     print('Finished stacking', ticker)
@@ -52,16 +52,16 @@ def plotCleanAndBefore(s_p500, baseDir, filePathcln, ticker):
     # Plot quotes
     title = ticker + ' quotes before and after cleaning'
     outputFile = filePathcln + ticker + "quotes_cleaning.png"
-    plotSeries(quotes, quotesbefore, 3, ticker, title, outputFile)
+    plotSeries(quotes, quotesbefore, 4, ticker, title, outputFile)
 
     # Plot trades
     title = ticker + ' trades before and after cleaning'
     outputFile = filePathcln + ticker + "trades_cleaning.png"
-    plotSeries(trades, tradesbefore, 3, ticker, title, outputFile)
+    plotSeries(trades, tradesbefore, 2, ticker, title, outputFile)
     
 if __name__ == '__main__':
     s_p500 = '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/s_p500.xlsx'
     baseDir = '/media/louis/DATA/Courant_dataset_matlab/R'
     filepathcln = '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/plots/'
-    ticker = 'GOOG'
+    ticker = 'MSFT'
     plotCleanAndBefore(s_p500, baseDir, filepathcln, ticker)
