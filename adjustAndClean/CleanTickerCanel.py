@@ -35,35 +35,54 @@ print(list_tickers)
 startDate = '20070620'
 endDate = '20070921'
 
+i = 0
+errored = []
+
 for ticker in list_tickers:
-    # Stack everything
-    start = time.time()
-    print("j")
-    stack = StackData(baseDir, startDate, endDate, ticker)
-    print('k')
-    stack.addQuotes()
-    stack.addTrades()
-    end = time.time()
-    print(end - start)
-    print('Finished stacking', ticker)
-                
-    # Get results
-    quotes = stack.getStackedQuotes()
-    trades = stack.getStackedTrades()
-    print('Got results', ticker)
-                
-    # Adjust
-    adjuster = TAQAdjust( quotes, trades, ticker, s_p500 )
-    adjuster.adjustQuote()
-    adjuster.adjustTrade()
-    print('Adjusted', ticker)
-                
-    # Clean
-    cleaner = TAQCleaner(quotes, trades, ticker)
-    quotes = np.delete(quotes, cleaner.cleanQuotesIndices(), axis = 0)
-    trades = np.delete(trades, cleaner.cleanTradesIndices(), axis = 0)
-    print('Cleaned', ticker)
+    try:
+        i += 1
+        #if ticker in ["NUE"]:
+        if i < 6:
+            continue
+        
+        print("\n\nStarted processing {:d} of {:d}: {:s}".format(i, len(list_tickers), ticker))
+        # Stack everything
+        start = time.time()
+        stack = StackData(baseDir, startDate, endDate, ticker)
+        stack.addQuotes()
+        stack.addTrades()
+        end = time.time()
+        print('Finished stacking {:s} at {:.1f}s'.format(ticker, (end - start)))
+                     
+        # Get results
+        quotes = stack.getStackedQuotes()
+        trades = stack.getStackedTrades()
+        end = time.time()
+        print('Got results {:s} at {:.1f}s'.format(ticker, (end - start)))
+                     
+        # Adjust
+        adjuster = TAQAdjust( quotes, trades, ticker, s_p500 )
+        adjuster.adjustQuote()
+        adjuster.adjustTrade()
+        end = time.time()
+        print('Adjusted {:s} at {:.1f}s'.format(ticker, (end - start)))
+                     
+        # Clean
+        cleaner = TAQCleaner(quotes, trades, ticker)
+        quotes = np.delete(quotes, cleaner.cleanQuotesIndices(), axis = 0)
+        trades = np.delete(trades, cleaner.cleanTradesIndices(), axis = 0)
+        end = time.time()
+        print('Cleaned {:s} at {:.1f}s'.format(ticker, (end - start)))
+         
+        cleaner.storeCleanedQuotes(filepathcln)
+        cleaner.storeCleanedTrades(filepathcln)
+        end = time.time()
+        print('Stored cleaned {:s} at {:.1f}s'.format(ticker, (end - start)))
+    except Exception as e:
+        errored.append(ticker)
+        print("!!!! Failed processing ticker: {:s}".format(ticker))
+        print(e)
+         
+        
     
-    cleaner.storeCleanedQuotes(filepathcln)
-    cleaner.storeCleanedTrades(filepathcln)
-    print('Stored cleaned', ticker)
+print("!!!! Failed processing following tickers: {:s}".format(",".join(errored)))

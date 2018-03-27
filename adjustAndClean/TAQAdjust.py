@@ -35,8 +35,9 @@ class TAQAdjust(object):
         self._Mult = pd.DataFrame(np.zeros((length,2)))
         self._Mult.index = np.unique(self._quotes[:,0])
         for date in self._Mult.index:
-            datePriceMult = float(self._s_p500xls[(self._s_p500xls['Names Date'] == float(date)) & (self._s_p500xls['Ticker Symbol'] == self._ticker)]['Cumulative Factor to Adjust Prices'])
-            dateVolMult = float(self._s_p500xls[(self._s_p500xls['Names Date'] == float(date)) & (self._s_p500xls['Ticker Symbol'] == self._ticker)]['Cumulative Factor to Adjust Shares/Vol'])
+            row = self._s_p500xls.loc[(self._s_p500xls['Names Date'] == float(date)) & (self._s_p500xls['Ticker Symbol'] == self._ticker)].iloc[0]
+            datePriceMult = float(row['Cumulative Factor to Adjust Prices'])
+            dateVolMult = float(row['Cumulative Factor to Adjust Shares/Vol'])
             self._Mult.loc[date] = [ datePriceMult, dateVolMult ]
 
     # Apply price and volume multipliers to quotes data
