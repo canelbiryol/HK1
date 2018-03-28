@@ -34,15 +34,16 @@ class Test_TAQCleaner(unittest.TestCase):
         self.assertAlmostEquals( float(stackedTrades[:,-2][0]), 1065000.0, 2 )
         
         # Execute quote cleaning
-        stackedQuotes = np.delete(stackedQuotes, cleaner.cleanQuotesIndices(), axis = 0)
+        stackedQuotes = stackedQuotes[cleaner.cleanQuotesIndices()==True,:]
+        #stackedQuotes = np.delete(stackedQuotes, cleaner.cleanQuotesIndices(), axis = 0)
         
         # Execute trade cleaning
-        stackedTrades = np.delete(stackedTrades, cleaner.cleanTradesIndices(), axis = 0)
+        stackedTrades = stackedTrades[cleaner.cleanTradesIndices()==True,:]
+        #stackedTrades = np.delete(stackedTrades, cleaner.cleanTradesIndices(), axis = 0)
         
         # Display
         print(stackedQuotes)
         print(stackedTrades)
-        
         
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.test1']

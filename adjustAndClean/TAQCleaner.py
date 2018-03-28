@@ -5,6 +5,7 @@ import struct
 import gzip
 import os.path
 from os import access, R_OK
+from dask.array.creation import indices
 
 class TAQCleaner(object):
     '''
@@ -13,7 +14,7 @@ class TAQCleaner(object):
     Default values for k and gamma were those given by the simulation (cf. CleanCalibration.py)
     '''
 
-    def __init__(self, stackedQuotes, stackedTrades, ticker, kT=5, gammaT=0.0005, kQ=5, gammaQ=0.0005):
+    def __init__(self, stackedQuotes, stackedTrades, ticker, kT=45, gammaT=0.0005, kQ=45, gammaQ=0.0005):
         '''
         Constructor: initialize attributes
         '''
@@ -27,98 +28,48 @@ class TAQCleaner(object):
         self._gammaT = gammaT
         self._kQ = kQ
         self._gammaQ = gammaQ
+        
+    def rollingWindow(self, a, window):
+        window = min(a.shape[-1], window)
+        shape = a.shape[:-1] + (a.shape[-1] - window + 1, window)
+        strides = a.strides + (a.strides[-1],)
+        return np.lib.stride_tricks.as_strided(a, shape=shape, strides=strides)
 
     def cleanQuotesIndices(self):
-        # toRemove will keep track of indices to remove
+        
         length = self._quotes.shape[0]
-        toRemove = deque()
-        i = 0
         
-        # Rolling parameters
-        rollMeanMid = 0
-        rollStdMid = 0
+        indices_kept = np.ones((length,1), dtype=bool).flatten()
         
-        # BROWNLEES AND GALLO SUGGESTION (unused, we followed the assignment guidelines)
-        # Min price difference in the timeframe 
-        # It is likely to be the resolution parameter for the stock given the high number of transactions
-        #askIncrements = np.array(self._quotes[1:length,-2].astype(np.float)) - np.array(self._quotes[0:length-1,-2].astype(np.float))
-        #bidIncrements = np.array(self._quotes[1:length,-4].astype(np.float)) - np.array(self._quotes[0:length-1,-4].astype(np.float))
-        #minTickDiff = min(abs(np.min(askIncrements)), abs(np.min(bidIncrements)))
-        
-        # Midpoints
         midList = 0.5 * (np.array(self._quotes[0:length,-4].astype(np.float)) + np.array(self._quotes[0:length,-2].astype(np.float)))
         
-        for i in range(0,length):
-            leftIndex = math.floor(i - self._kQ / 2)
-            rightIndex = math.floor(i + self._kQ / 2)
-            
-            # Set bounds of the rolling windows, taking into account limit cases
-            if (leftIndex < 0):
-                rightIndex -= leftIndex
-                leftIndex = 0
-            elif (rightIndex - length >= 0):
-                leftIndex -= (rightIndex - length)
-                rightIndex = length
-            
-            # Compute rolling metrics
-            rollMeanMid = np.mean(midList[leftIndex:rightIndex])
-            rollStdMid = np.std(midList[leftIndex:rightIndex])
-
-            # Test criterion
-            if (abs(midList[i] - rollMeanMid) >= 2 * rollStdMid + self._gammaQ * rollMeanMid):
-                toRemove.append(i)
-                    
-        npytoRemove = np.array(toRemove)
-        npytoRemove = npytoRemove.astype(int)
-        npytoRemove = np.unique(npytoRemove)
-        npytoRemove = np.sort(npytoRemove)
-        npytoRemove = np.flip(npytoRemove, axis=0)
-        return(npytoRemove)
+        size = min(midList.shape[-1],self._kQ)
+        roll = self.rollingWindow(midList,size)
+        roll = np.concatenate([np.tile(roll[0],(size - 1,1)), roll])
+        
+        rollMeanMidVector, rollStdMidVector = np.mean(roll, -1).flatten(), np.std(roll,-1).flatten()
+        
+        indices_kept = (abs(midList - rollMeanMidVector) <= 2 * rollStdMidVector + self._gammaQ * rollMeanMidVector)
+        return(indices_kept)
+        
                     
     def cleanTradesIndices(self):
-        # toRemove will keep track of indices to remove
-        length = self._trades.shape[0]
-        toRemove = deque()
-        i = 0
-        
-        # Rolling parameters
-        rollMean = 0
-        rollStd = 0
-        
-        # BROWNLEES AND GALLO SUGGESTION (unused, we followed the assignment guidelines)
-        # Min price difference in the timeframe 
-        # It is likely to be the resolution parameter for the stock given the high number of transactions
-        #tradeIncrements = np.array(self._trades[1:length,-2].astype(np.float)) - np.array(self._trades[0:length-1,-2].astype(np.float))
-        #minTickDiff = abs(np.min(tradeIncrements))
 
+        length = self._trades.shape[0]
+        
+        indices_kept = np.ones((length,1), dtype=bool).flatten()
+        
         windowTrade = np.array(self._trades[0:length,-2].astype(np.float))
         
-        for i in range(0,length):
-            leftIndex = math.floor(i - self._kT / 2)
-            rightIndex = math.floor(i + self._kT / 2)
-            
-            # Set bounds of the rolling windows, taking into account limit cases
-            if (leftIndex < 0):
-                rightIndex -= leftIndex
-                leftIndex = 0
-            elif (rightIndex - length >= 0):
-                leftIndex -= (rightIndex - length)
-                rightIndex = length
+        size = min(windowTrade.shape[-1],self._kT)
+        roll = self.rollingWindow(windowTrade,size)
+        roll = np.concatenate([np.tile(roll[0],(size - 1,1)), roll])
+        
+        rollMeanMidVector, rollStdMidVector = np.mean(roll, -1).flatten(), np.std(roll, -1).flatten()
+        
+        indices_kept = (abs(windowTrade - rollMeanMidVector) <= 2 * rollStdMidVector + self._gammaT * rollMeanMidVector)
+        return(indices_kept)
 
-            # Compute rolling metrics
-            rollMean = np.mean(windowTrade[leftIndex:rightIndex])
-            rollStd = np.std(windowTrade[leftIndex:rightIndex])
-
-            # Test criterion
-            if (abs(windowTrade[i] - rollMean) >= 2 * rollStd + self._gammaT * rollMean):
-                toRemove.append(i)
-
-        npytoRemove = np.array(toRemove)
-        npytoRemove = npytoRemove.astype(int)
-        npytoRemove = np.unique(npytoRemove)
-        npytoRemove = np.sort(npytoRemove)
-        npytoRemove = np.flip(npytoRemove, axis=0)
-        return(npytoRemove)
         
     def storeCleanedTrades(self, filepath):
         

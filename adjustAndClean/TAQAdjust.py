@@ -42,32 +42,23 @@ class TAQAdjust(object):
 
     # Apply price and volume multipliers to quotes data
     def adjustQuote(self):
-        length = self._quotes.shape[0]
         
-        for i in range(0, length):
-            quote = self._quotes[i,:]
-            date = quote[0]
-            pMult = self._Mult.loc[date,0]
-            vMult = self._Mult.loc[date,1]
-            
-            self._quotes[i, -1] = vMult * float(quote[-1])
-            self._quotes[i, -2] = pMult * float(quote[-2])
-            self._quotes[i, -3] = vMult * float(quote[-3])
-            self._quotes[i, -4] = pMult * float(quote[-4])
+        vol_mults = np.array([self._Mult.loc[date, 1] for date in self._quotes[:,0]])
+        price_mults = np.array([self._Mult.loc[date, 0] for date in self._quotes[:,0]])
+
+        self._quotes[:,-1] =  (self._quotes[:,-1]).astype(float) * vol_mults
+        self._quotes[:,-2] =  (self._quotes[:,-2]).astype(float) * price_mults
+        self._quotes[:,-3] =  (self._quotes[:,-3]).astype(float) * vol_mults
+        self._quotes[:,-4] =  (self._quotes[:,-4]).astype(float) * price_mults
 
     # Apply price and volume multipliers to trades data
     def adjustTrade(self):
-        length = self._trades.shape[0]
-        
-        for i in range(0, length):
-            trade = self._trades[i,:]
-            date = trade[0]
-            pMult = self._Mult.loc[date,0]
-            vMult = self._Mult.loc[date,1]
-            
-            self._trades[i,-1] = vMult * float(trade[-1])
-            self._trades[i, -2] = pMult * float(trade[-2])
 
+        volt_mults = np.array([self._Mult.loc[date, 1] for date in self._trades[:,0]])
+        pricet_mults = np.array([self._Mult.loc[date, 0] for date in self._trades[:,0]])
+
+        self._trades[:,-1] =  (self._trades[:,-1]).astype(float) * volt_mults
+        self._trades[:,-2] =  (self._trades[:,-2]).astype(float) * pricet_mults
 
     def getStackedQuotes(self):
         return(self._quotes)

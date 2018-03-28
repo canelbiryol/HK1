@@ -4,6 +4,7 @@ from adjustAndClean.TAQAdjust import TAQAdjust
 from adjustAndClean.TAQCleaner import TAQCleaner
 from adjustAndClean.StackData import StackData
 import time
+from _operator import index
         
 """
 """
@@ -17,7 +18,7 @@ s_ptickers = s_ptickers[:-1]
 baseDir = '/media/louis/DATA/Courant_dataset_matlab/R'
 filepathcln = '/media/louis/DATA/cleandata/'
 startDate = '20070620'
-endDate = '20070921'
+endDate = '20070621'
 ticker1 = 'MSFT'
 
 # Stack everything
@@ -43,9 +44,13 @@ adjuster.adjustTrade()
 print('Adjusted MSFT')
             
 # Clean
-cleaner = TAQCleaner(quotes, trades, ticker1, kT=60, gammaT=0.02, kQ=60, gammaQ=0.02)
-quotes = np.delete(quotes, cleaner.cleanQuotesIndices(), axis = 0)
-trades = np.delete(trades, cleaner.cleanTradesIndices(), axis = 0)
+cleaner = TAQCleaner(quotes, trades, ticker1, kT=45, gammaT=0.0002, kQ=45, gammaQ=0.0002)
+indextrades = cleaner.cleanTradesIndices()
+print((len(indextrades) - np.count_nonzero(indextrades))/len(indextrades))
+indexquotes = cleaner.cleanQuotesIndices()
+print((len(indexquotes) - np.count_nonzero(indexquotes))/len(indexquotes))
+quotes = quotes[indexquotes==True,:]
+trades = trades[indextrades==True,:]
 print('Cleaned MSFT')
 
 cleaner.storeCleanedQuotes(filepathcln)
