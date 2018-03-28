@@ -56,15 +56,19 @@ print('Finished building multipliers table at {:.1f}s'.format((end - start)))
 i = 0
 errored = []
 D = len(dates)
+start = time.time()
 for i in range(D):
     startDate = dates[i]
     endDate = dates[i+1]
+
+    end = time.time()
+    print("Start of day {:d} at {:.1f}s".format(i, (end - start)))
     
+    j = 0
     for ticker in list_tickers:
         try:
-            print("\n\nStarted processing {:d} of {:d}: {:s}".format(i, len(list_tickers), ticker))
+            print("\n\nStarted processing {:d} of {:d}: {:s}".format(j, len(list_tickers), ticker))
             # Stack everything
-            start = time.time()
             stack = StackData(baseDir, startDate, endDate, ticker)
             stack.addQuotes()
             stack.addTrades()
@@ -95,12 +99,14 @@ for i in range(D):
             cleaner.storeCleanedTrades(filepathcln)
             end = time.time()
             print('Stored cleaned {:s} at {:.1f}s'.format(ticker, (end - start)))
+
+            j = j+1
         except Exception as e:
             errored.append(ticker)
             print("!!!! Failed processing ticker: {:s}".format(ticker))
             print(e)
-         
-    i = i+1
-        
-    
+       
+    end = time.time()
+    print('Done with day {:d} at {:.1f}s'.format(i, (end - start)))
+              
 print("!!!! Failed processing following tickers: {:s}".format(",".join(errored)))
