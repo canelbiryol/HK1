@@ -13,6 +13,7 @@ for specified list of tickers and time frame.
 """
 
 print('Initializing')
+
 """ TO SPECIFY """
 s_p500 = '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/s_p500.xlsx'
 
@@ -23,15 +24,14 @@ s_ptickers = s_ptickers[:-1]
 
 """ TO SPECIFY """
 baseDir = '/media/louis/DATA/Courant_dataset_matlab/R'
-
 """ TO SPECIFY """
 filepathcln = '/media/louis/DATA/cleandata/'
-
 """ TO SPECIFY """
 tickers_todo = '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/split_adjust_clean.xlsx'
+""" TO SPECIFY (your name!) """
+list_tickers_xls = pd.read_excel(open(tickers_todo,'rb'), sheet_name='Louis')
 
 # List of tickers todo
-list_tickers_xls = pd.read_excel(open(tickers_todo,'rb'), sheet_name='Louis')
 list_tickers = np.unique((np.array(list_tickers_xls['Ticker Symbol'])).astype(str))
 list_tickers = list_tickers[:-1]
 """ IF YOU DON'T WANT EVERYTHING, uncomment this line """

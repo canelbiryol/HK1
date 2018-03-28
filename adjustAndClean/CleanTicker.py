@@ -12,6 +12,7 @@ for one specified ticker and time frame.
 """
 
 print('Initializing')
+
 # S&P500 tickers and user's parameters
 s_p500 = '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/s_p500.xlsx'
 s_p500xls = pd.read_excel(open(s_p500,'rb'), sheet_name='WRDS')
