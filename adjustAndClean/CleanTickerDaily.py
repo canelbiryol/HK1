@@ -62,7 +62,7 @@ for i in range(D):
     endDate = dates[i+1]
 
     end = time.time()
-    print("Start of day {:d} at {:.1f}s".format(i, (end - start)))
+    print("\n\nStart of day {:d} at {:.1f}s".format(i, (end - start)))
     
     j = 0
     for ticker in list_tickers:
@@ -107,6 +107,6 @@ for i in range(D):
             print(e)
        
     end = time.time()
-    print('Done with day {:d} at {:.1f}s'.format(i, (end - start)))
+    print('\n\nDone with day {:d} at {:.1f}s'.format(i, (end - start)))
               
 print("!!!! Failed processing following tickers: {:s}".format(",".join(errored)))
