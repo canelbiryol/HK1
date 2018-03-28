@@ -42,7 +42,7 @@ print(list_tickers)
 startDate = '20070620'
 endDate = '20070921'
 dates = os.listdir(baseDir + '/quotes/')
-dates.append('20070930')
+dates.append('20070930') # dummy date for the end
 dates = np.sort(dates)
 print(dates)
 
