@@ -4,6 +4,10 @@ from adjustAndClean.TAQAdjust import TAQAdjust
 from adjustAndClean.AdjustingHashmap import AdjustingHashmap
 from copy import deepcopy
 
+"""
+Program to plot differences between adjusted and non-adjusted series.
+"""
+
 def plotSeries(series1, series2, index_price, ticker, title, outputFile):
     fig = plt.figure()
     

@@ -60,7 +60,7 @@ class StackData(object):
                 self._stackedQuotes[l+i, 4] = float(quoteFile.getAskPrice(i))
                 self._stackedQuotes[l+i, 5] = float(quoteFile.getAskSize(i))
             l += length
-        
+        # To see minimum size required, uncomment this line
         #print(self.safely_reduce_dtype(self._stackedQuotes))
             
     # Trades
@@ -92,7 +92,7 @@ class StackData(object):
     def getTicker(self):
         return self._ticker
 
-    # Optimisation @lguigo - Function to get the minimum size in the array
+    # Optimisation - Function to get the minimum size in the array
     def safely_reduce_dtype(self, ser):  # pandas.Series or numpy.array  
         orig_dtype = "".join([x for x in ser.dtype.name if x.isalpha()]) # float/int
         mx = 1

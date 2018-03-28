@@ -9,9 +9,10 @@ import random
 Calibration program for gamma and k for quotes.
 We try different values and choose the one that minimize the kurtosis, and keep the skewness around 0.
 We pick random stocks and compute mean kurtosis and skewness with several values of (k,gamma).
-RESULT: After simulations, we get k = 45 and gamma = 0.02.
+RESULT: After simulations, we get k = 45 and gamma = 0.0005.
 """
 
+print('Initializing')
 # Dataframe
 baseDir = '/media/louis/DATA/Courant_dataset_matlab/R/'
 startDate = '20070713'
@@ -42,7 +43,7 @@ print(sampleticks)
 stacks = np.array([StackData(baseDir, startDate, endDate, ticker) for ticker in sampleticks])
 print(stacks)
 for s in stacks:
-    print('hey')
+    print('One more stock stacked')
     s.addQuotes()
 
 i = 0

@@ -5,6 +5,10 @@ from adjustAndClean.TAQCleaner import TAQCleaner
 from adjustAndClean.AdjustingHashmap import AdjustingHashmap
 from copy import deepcopy
 
+"""
+Program to plot differences between cleaned and non-cleaned series.
+"""
+
 def plotSeries(series1, series2, index_price, ticker, title, outputFile):
     fig = plt.figure()
     
@@ -64,6 +68,7 @@ def plotCleanAndBefore(s_p500, baseDir, filePathcln, ticker):
     plotSeries(trades, tradesbefore, 2, ticker, title, outputFile)
     
 if __name__ == '__main__':
+    print('Initializing')
     s_p500 = '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/s_p500.xlsx'
     baseDir = '/media/louis/DATA/Courant_dataset_matlab/R'
     filepathcln = '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/plots/'

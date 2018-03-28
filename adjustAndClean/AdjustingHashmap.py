@@ -3,8 +3,9 @@ import pandas as pd
 
 class AdjustingHashmap(object):
     '''
-    Dictionnary of dictionnary which allows to map a stock and a date to
+    Dictionary of dictionaries which allows to map a stock ticker and a date to
     a price multiplier and a volume multiplier.
+    To be called at the beginning of every program requiring adjusting.
     '''
 
     def __init__(self, s_p500):

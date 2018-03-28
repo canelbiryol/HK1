@@ -3,14 +3,16 @@ import pandas as pd
 from adjustAndClean.TAQAdjust import TAQAdjust
 from adjustAndClean.TAQCleaner import TAQCleaner
 from adjustAndClean.StackData import StackData
+from adjustAndClean.AdjustingHashmap import AdjustingHashmap
 import time
-from _operator import index
-        
+
 """
+Stack, adjust, clean and store in binary format at specified location the data
+for one specified ticker and time frame.
 """
 
-print('Initializing.')
-# FIRST: Take S&P500 tickers
+print('Initializing')
+# S&P500 tickers and user's parameters
 s_p500 = '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/s_p500.xlsx'
 s_p500xls = pd.read_excel(open(s_p500,'rb'), sheet_name='WRDS')
 s_ptickers = np.unique((np.array(s_p500xls['Ticker Symbol'])).astype(str))
@@ -19,40 +21,48 @@ baseDir = '/media/louis/DATA/Courant_dataset_matlab/R'
 filepathcln = '/media/louis/DATA/cleandata/'
 startDate = '20070620'
 endDate = '20070621'
-ticker1 = 'MSFT'
+ticker = 'MSFT'
+
+# Multipliers map
+print("\nStarted building multipliers table {:s}".format(ticker))
+start = time.time()
+multmap = AdjustingHashmap(s_p500)
+end = time.time()
+print('Finished building multipliers table {:s} at {:.1f}s'.format(ticker, (end - start)))
 
 # Stack everything
-start = time.time()
-print("j")
-stack = StackData(baseDir, startDate, endDate, ticker1)
-print('k')
+stack = StackData(baseDir, startDate, endDate, ticker)
 stack.addQuotes()
 stack.addTrades()
 end = time.time()
-print(end - start)
-print('Finished stacking MSFT')
+print('Finished stacking {:s} at {:.1f}s'.format(ticker, (end - start)))
             
 # Get results
 quotes = stack.getStackedQuotes()
 trades = stack.getStackedTrades()
-print('Got results MSFT')
-            
+end = time.time()
+print('Got results {:s} at {:.1f}s'.format(ticker, (end - start)))
+
 # Adjust
-adjuster = TAQAdjust( quotes, trades, ticker1, s_p500 )
+adjuster = TAQAdjust( quotes, trades, ticker, multmap)
 adjuster.adjustQuote()
 adjuster.adjustTrade()
-print('Adjusted MSFT')
+end = time.time()
+print('Adjusted {:s} at {:.1f}s'.format(ticker, (end - start)))
             
 # Clean
-cleaner = TAQCleaner(quotes, trades, ticker1, kT=45, gammaT=0.0002, kQ=45, gammaQ=0.0002)
+cleaner = TAQCleaner(quotes, trades, ticker)
 indextrades = cleaner.cleanTradesIndices()
-print((len(indextrades) - np.count_nonzero(indextrades))/len(indextrades))
 indexquotes = cleaner.cleanQuotesIndices()
-print((len(indexquotes) - np.count_nonzero(indexquotes))/len(indexquotes))
 quotes = quotes[indexquotes==True,:]
 trades = trades[indextrades==True,:]
-print('Cleaned MSFT')
-
+print((len(indextrades) - np.count_nonzero(indextrades))/len(indextrades))
+print((len(indexquotes) - np.count_nonzero(indexquotes))/len(indexquotes))
+end = time.time()
+print('Cleaned {:s} at {:.1f}s'.format(ticker, (end - start)))
+             
 cleaner.storeCleanedQuotes(filepathcln)
 cleaner.storeCleanedTrades(filepathcln)
-print('Stored clean MSFT')
+end = time.time()
+print('Stored cleaned {:s} at {:.1f}s'.format(ticker, (end - start)))
+
