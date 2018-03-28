@@ -33,6 +33,7 @@ list_tickers = s_ptickers[:-1]
 dates = os.listdir(baseDir + '/quotes/')
 D = len(dates)
 #Add dummy date
+dates = np.sort(dates)
 dates.append('20070921')
 for i in range(D):
     startDate = dates[i]
