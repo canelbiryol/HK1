@@ -4,6 +4,7 @@ import struct
 import gzip
 import os.path
 from os import access, R_OK
+from adjustAndClean.AdjustingHashmap import AdjustingHashmap
 
 class TAQAdjust(object):
     '''
@@ -14,37 +15,23 @@ class TAQAdjust(object):
     then no adjustment is necessary.
     '''
 
-    def __init__(self, stackedQuotes, stackedTrades, ticker, s_p500):
+    def __init__(self, stackedQuotes, stackedTrades, ticker, multMap):
         '''
         stackedQuotes: Array containing quotes (from StackData)
         stackedTrades: Array containing trades (from StackData)
         s_p500: String path to the s_p500.xlsx file
         '''
         # Instantiate attributes
-        self._s_p500xls = pd.read_excel(open(s_p500,'rb'), sheet_name='WRDS')
         self._quotes = stackedQuotes
         self._trades = stackedTrades
         self._ticker = ticker
-        
-        # Retrieve quote multipliers from the excel file, and map them to each date
-        allDates = []
-        allDates = np.append(allDates, self._quotes[:,0], axis=0)
-        allDates = np.append(allDates, self._trades[:,0], axis=0)
-        allDates = np.unique(allDates)
-        length = len(allDates)
-        self._Mult = pd.DataFrame(np.zeros((length,2)))
-        self._Mult.index = np.unique(self._quotes[:,0])
-        for date in self._Mult.index:
-            row = self._s_p500xls.loc[(self._s_p500xls['Names Date'] == float(date)) & (self._s_p500xls['Ticker Symbol'] == self._ticker)].iloc[0]
-            datePriceMult = float(row['Cumulative Factor to Adjust Prices'])
-            dateVolMult = float(row['Cumulative Factor to Adjust Shares/Vol'])
-            self._Mult.loc[date] = [ datePriceMult, dateVolMult ]
+        self._multMap = multMap
 
     # Apply price and volume multipliers to quotes data
     def adjustQuote(self):
         
-        vol_mults = np.array([self._Mult.loc[date, 1] for date in self._quotes[:,0]])
-        price_mults = np.array([self._Mult.loc[date, 0] for date in self._quotes[:,0]])
+        vol_mults = np.array([self._multMap.getVolMultiplier(self._ticker, date) for date in self._quotes[:,0]])
+        price_mults = np.array([self._multMap.getPriceMultiplier(self._ticker, date) for date in self._quotes[:,0]])
 
         self._quotes[:,-1] =  (self._quotes[:,-1]).astype(float) * vol_mults
         self._quotes[:,-2] =  (self._quotes[:,-2]).astype(float) * price_mults
@@ -54,8 +41,8 @@ class TAQAdjust(object):
     # Apply price and volume multipliers to trades data
     def adjustTrade(self):
 
-        volt_mults = np.array([self._Mult.loc[date, 1] for date in self._trades[:,0]])
-        pricet_mults = np.array([self._Mult.loc[date, 0] for date in self._trades[:,0]])
+        volt_mults = np.array([self._multMap.getVolMultiplier(self._ticker, date) for date in self._trades[:,0]])
+        pricet_mults = np.array([self._multMap.getPriceMultiplier(self._ticker, date) for date in self._trades[:,0]])
 
         self._trades[:,-1] =  (self._trades[:,-1]).astype(float) * volt_mults
         self._trades[:,-2] =  (self._trades[:,-2]).astype(float) * pricet_mults
@@ -67,18 +54,18 @@ class TAQAdjust(object):
         return(self._trades)
         
     def getVolMult(self, date):
-        return(self._Mult.loc[date, 1])
+        return(self._multMap.getVolMultiplier(self._ticker, date))
     
     def getPriceMult(self, date):
-        return(self._Mult.loc[date, 0])
+        return(self._multMap.getPriceMultiplier(self._ticker, date))
     
     # For the purpose of unit testing
     def setPriceMult(self, date, val):
-        self._Mult.loc[date, 0] = val
+        self._multMap.setPriceMultiplier(self._ticker, date, val)
         
     # For the purpose of unit testing
     def setVolMult(self, date, val):
-        self._Mult.loc[date, 1] = val
+        self._multMap.setVolMultiplier(self._ticker, date, val)
         
     def storeAdjustedTrades(self, filepath):
         

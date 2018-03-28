@@ -1,6 +1,7 @@
 from matplotlib import pyplot as plt
 from adjustAndClean.StackData import StackData
 from adjustAndClean.TAQAdjust import TAQAdjust
+from adjustAndClean.AdjustingHashmap import AdjustingHashmap
 from copy import deepcopy
 
 def plotSeries(series1, series2, index_price, ticker, title, outputFile):
@@ -23,6 +24,10 @@ def plotSeries(series1, series2, index_price, ticker, title, outputFile):
 
 
 def plotAdjustAndBefore(s_p500, baseDir, filePathcadj, ticker):
+    # Multipliers map
+    multmap = AdjustingHashmap(s_p500)
+    print('Finished building multipliers map', ticker)
+    
     # Stack
     stack = StackData(baseDir, '20070625', '20070629', ticker)
     stack.addQuotes()
@@ -37,7 +42,7 @@ def plotAdjustAndBefore(s_p500, baseDir, filePathcadj, ticker):
     print('Got stacked results', ticker)
 
     # Adjust
-    adjuster = TAQAdjust( quotes, trades, ticker, s_p500 )
+    adjuster = TAQAdjust( quotes, trades, ticker, multmap )
     adjuster.adjustQuote()
     adjuster.adjustTrade()
     print('Finished adjustment', ticker)

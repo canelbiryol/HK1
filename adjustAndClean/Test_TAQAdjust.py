@@ -1,6 +1,7 @@
 import unittest
 import numpy as np
 from adjustAndClean.TAQAdjust import TAQAdjust
+from adjustAndClean.AdjustingHashmap import AdjustingHashmap
 
 class Test_TAQAdjust2(unittest.TestCase):
     '''
@@ -16,7 +17,8 @@ class Test_TAQAdjust2(unittest.TestCase):
         stackedTrades = np.array([['20070620', 34241000, 106.5, 85200.0], ['20070621', 57596000, 106.61000061035156, 500.0], ['20070621', 57596000, 106.61000061035156, 200.0], ['20070621', 57597000, 106.5999984741211, 200.0]])
         stackedQuotes = np.array([['20070620', 34241000, 106.5, 85200.0, 106.1, 8200.0], ['20070621', 57597000, 106.5, 85200.0, 106.1, 800.0]])
         
-        adjuster = TAQAdjust( stackedQuotes, stackedTrades, 'IBM', s_p500 )
+        multmap = AdjustingHashmap(s_p500)
+        adjuster = TAQAdjust( stackedQuotes, stackedTrades, 'IBM', multmap )
         
         # Initial quote check
         self.assertAlmostEquals( float(stackedQuotes[:,-4][0]), 106.5, 2 )

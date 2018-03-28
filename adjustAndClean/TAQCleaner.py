@@ -30,9 +30,11 @@ class TAQCleaner(object):
         self._gammaQ = gammaQ
         
     def rollingWindow(self, a, window):
+        
         window = min(a.shape[-1], window)
         shape = a.shape[:-1] + (a.shape[-1] - window + 1, window)
         strides = a.strides + (a.strides[-1],)
+        
         return np.lib.stride_tricks.as_strided(a, shape=shape, strides=strides)
 
     def cleanQuotesIndices(self):

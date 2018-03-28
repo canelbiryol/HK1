@@ -2,8 +2,8 @@ from matplotlib import pyplot as plt
 from adjustAndClean.StackData import StackData
 from adjustAndClean.TAQAdjust import TAQAdjust
 from adjustAndClean.TAQCleaner import TAQCleaner
+from adjustAndClean.AdjustingHashmap import AdjustingHashmap
 from copy import deepcopy
-import numpy as np
 
 def plotSeries(series1, series2, index_price, ticker, title, outputFile):
     fig = plt.figure()
@@ -24,6 +24,10 @@ def plotSeries(series1, series2, index_price, ticker, title, outputFile):
 
 
 def plotCleanAndBefore(s_p500, baseDir, filePathcln, ticker):
+    # Multipliers map
+    multmap = AdjustingHashmap(s_p500)
+    print('Finished building multipliers map', ticker)
+    
     # Stack
     stack = StackData(baseDir, '20070625', '20070929', ticker)
     stack.addQuotes()
@@ -36,7 +40,7 @@ def plotCleanAndBefore(s_p500, baseDir, filePathcln, ticker):
     print('Got stacked results', ticker)
 
     # Adjustment
-    adjuster = TAQAdjust( quotes, trades, ticker, s_p500 )
+    adjuster = TAQAdjust( quotes, trades, ticker, multmap )
     adjuster.adjustQuote()
     adjuster.adjustTrade()
     quotesbefore = deepcopy(quotes)
@@ -45,8 +49,8 @@ def plotCleanAndBefore(s_p500, baseDir, filePathcln, ticker):
 
     # Cleaning
     cleaner = TAQCleaner( quotes, trades, ticker )
-    quotes = np.delete(quotes, cleaner.cleanQuotesIndices(), axis = 0)
-    trades = np.delete(trades, cleaner.cleanTradesIndices(), axis = 0)
+    quotes = quotes[cleaner.cleanQuotesIndices()==True,:]
+    trades = trades[cleaner.cleanTradesIndices()==True,:]
     print('Finished cleaning', ticker)
 
     # Plot quotes

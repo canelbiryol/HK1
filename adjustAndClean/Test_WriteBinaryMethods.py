@@ -4,6 +4,7 @@ from adjustAndClean.TAQAdjust import TAQAdjust
 from adjustAndClean.TAQCleaner import TAQCleaner
 from dbReaders.TAQQuotesReader import TAQQuotesReader
 from dbReaders.TAQTradesReader import TAQTradesReader
+from adjustAndClean.AdjustingHashmap import AdjustingHashmap
 
 class Test_WriteBinaryMethods(unittest.TestCase):
     '''
@@ -21,8 +22,11 @@ class Test_WriteBinaryMethods(unittest.TestCase):
         filepathadj = '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/adj/'
         filepathcln = '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/cln/'
         
+        # Multipliers map
+        multmap = AdjustingHashmap(s_p500)
+        
         # Write after reading and adjusting
-        adjuster = TAQAdjust( stackedQuotes, stackedTrades, 'IBM', s_p500 )
+        adjuster = TAQAdjust( stackedQuotes, stackedTrades, 'IBM', multmap )
         adjuster.setPriceMult("20070621", 0.5)
         adjuster.setVolMult("20070621", 0.25)
         adjuster.adjustQuote()
@@ -32,8 +36,8 @@ class Test_WriteBinaryMethods(unittest.TestCase):
         
         # Write after reading and cleaning
         cleaner = TAQCleaner(stackedQuotes, stackedTrades, 'IBM')
-        stackedQuotes = np.delete(stackedQuotes, cleaner.cleanQuotesIndices(), axis = 0)
-        stackedTrades = np.delete(stackedTrades, cleaner.cleanTradesIndices(), axis = 0)
+        stackedQuotes = stackedQuotes[cleaner.cleanQuotesIndices()==True,:]
+        stackedTrades = stackedTrades[cleaner.cleanTradesIndices()==True,:]
         cleaner.storeCleanedQuotes(filepathcln)
         cleaner.storeCleanedTrades(filepathcln)
         

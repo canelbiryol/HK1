@@ -59,7 +59,7 @@ for k in k_test:
             if (trades.size == 0):
                 continue
             cleaner = TAQCleaner([], trades, tckr, k, gamma, k, gamma)
-            trades = np.delete(trades, cleaner.cleanTradesIndices(), axis = 0)
+            trades = trades[cleaner.cleanTradesIndices()==True,:]
             skews[i,j] += skew(np.array(trades[:,-2].astype(np.float)))
             kurtosiss[i,j] += kurtosis(np.array(trades[:,-2].astype(np.float)))
         skews[i,j] = skews[i,j] / l

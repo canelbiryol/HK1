@@ -56,7 +56,7 @@ for k in k_test:
             if (quotes.size == 0):
                 continue
             cleaner = TAQCleaner(quotes, [], tckr, k, gamma, k, gamma)
-            quotes = np.delete(quotes, cleaner.cleanQuotesIndices(), axis = 0)
+            quotes = quotes[cleaner.cleanQuotesIndices()==True,:]
             skews[i,j] += skew(np.array(quotes[:,-2].astype(np.float)))
             kurtosiss[i,j] += kurtosis(np.array(quotes[:,-2].astype(np.float)))
         skews[i,j] = skews[i,j] / l
