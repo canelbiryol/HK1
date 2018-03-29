@@ -1,11 +1,8 @@
 import numpy as np
-import math
-from _collections import deque
 import struct
 import gzip
 import os.path
 from os import access, R_OK
-from dask.array.creation import indices
 
 class TAQCleaner(object):
     '''
@@ -41,13 +38,17 @@ class TAQCleaner(object):
         
         length = self._quotes.shape[0]
         
-        indices_kept = np.ones((length,1), dtype=bool).flatten()
-        
         midList = 0.5 * (np.array(self._quotes[0:length,-4].astype(np.float)) + np.array(self._quotes[0:length,-2].astype(np.float)))
         
         size = min(midList.shape[-1],self._kQ)
         roll = self.rollingWindow(midList,size)
-        roll = np.concatenate([np.tile(roll[0],(size - 1,1)), roll])
+        
+        # BEFORE: roll = np.concatenate([np.tile(roll[0],(size - 1,1)), roll])
+        # NOW: Center it (we want half of past and half of forward values)
+        if ((size-1)%2 == 0):
+            roll = np.concatenate([np.tile(roll[0],(int((size - 1)/2),1)), np.concatenate([roll, np.tile(roll[-1],(int((size - 1)/2),1))])])
+        else:
+            roll = np.concatenate([np.tile(roll[0],((int(size/2) - 1),1)), np.concatenate([roll, np.tile(roll[-1],((int(size/2)),1))])])
         
         rollMeanMidVector, rollStdMidVector = np.mean(roll, -1).flatten(), np.std(roll,-1).flatten()
         
@@ -59,14 +60,18 @@ class TAQCleaner(object):
 
         length = self._trades.shape[0]
         
-        indices_kept = np.ones((length,1), dtype=bool).flatten()
-        
         windowTrade = np.array(self._trades[0:length,-2].astype(np.float))
         
         size = min(windowTrade.shape[-1],self._kT)
         roll = self.rollingWindow(windowTrade,size)
-        roll = np.concatenate([np.tile(roll[0],(size - 1,1)), roll])
-        
+
+        # BEFORE: roll = np.concatenate([np.tile(roll[0],(size - 1,1)), roll])
+        # NOW: Center it (we want half of past and half of forward values)
+        if ((size-1)%2 == 0):
+            roll = np.concatenate([np.tile(roll[0],(int((size - 1)/2),1)), np.concatenate([roll, np.tile(roll[-1],(int((size - 1)/2),1))])])
+        else:
+            roll = np.concatenate([np.tile(roll[0],((int(size/2) - 1),1)), np.concatenate([roll, np.tile(roll[-1],((int(size/2)),1))])])
+            
         rollMeanMidVector, rollStdMidVector = np.mean(roll, -1).flatten(), np.std(roll, -1).flatten()
         
         indices_kept = (abs(windowTrade - rollMeanMidVector) <= 2 * rollStdMidVector + self._gammaT * rollMeanMidVector)
