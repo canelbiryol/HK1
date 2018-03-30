@@ -19,14 +19,16 @@ class TickTest(object):
         self.prevPrice = newPrice
         return( self.side )
     
+    #cb
+    #modified the method to return timestamp, trade size and classification
     def classifyAll(self, data, startTimestamp, endTimestamp ):
-        classifications = [0]*data.getN() # That's the most space we might need
+        classifications = [0]*len(data) # That's the most space we might need
         startI = 0
-        for i in range( 0, data.getN() ):
-            if( data.getTimestamp( i ) < startTimestamp ):
+        for i in range( 0, len(data) ):
+            if( data[i][1] < startTimestamp ):
                 continue
-            if( data.getTimestamp( i ) >= endTimestamp ):
+            if( data[i][1] >= endTimestamp ):
                 break
-            classifications[ startI ] = ( data.getTimestamp( i ), data.getPrice( i ), self.classify( data.getPrice( i ) ) )
+            classifications[ startI ] = ( data[i][1], data[i][3], self.classify( data[i][2] ) )
             startI = startI + 1
         return classifications[0:startI]
