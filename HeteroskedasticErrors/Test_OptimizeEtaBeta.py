@@ -12,7 +12,8 @@ class Test(unittest.TestCase):
     def test1(self):
         '''
         Test to see if our OptimizeEtaBeta code works
-        First let's create some fake data in a universe of 1000 days and 4 stocks. The stocks have similar behaviors and different StdErrs to account for heteroskedasticity.
+        First let's create some fake data in a universe of 1000 days and 4 stocks.
+        The stocks have similar behaviors and different StdErrs to account for heteroskedasticity.
         '''
         
         h = np.zeros(4000)

@@ -144,7 +144,6 @@ output = '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/stats'
 """ TO SPECIFY """
 list_tickers_xls = pd.read_excel(open(tickers_todo,'rb'), sheet_name='Michael')
 list_tickers = np.unique((np.array(list_tickers_xls['Ticker Symbol'])).astype(str))
-list_tickers = list_tickers[:-1]
 
 # startDate = '20070620'
 # endDate = '20070921'

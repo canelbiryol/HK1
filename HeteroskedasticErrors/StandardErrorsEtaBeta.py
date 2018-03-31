@@ -1,10 +1,12 @@
 '''
-
+TODO: Write Spec
 '''
+
 import numpy as np
 
 def getCovarianceMatrix(X, sigmas, imbalances, ADVs, StdErrs):
     '''X is the vector [eta, beta]'''
+
     #Checks for consistency
     N = len(sigmas)
     if (len(imbalances)!=N or len(ADVs)!=N or len(StdErrs)!=N):
