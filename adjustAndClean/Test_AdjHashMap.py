@@ -9,7 +9,6 @@ class Test_AdjHashMap(unittest.TestCase):
 
     def test1(self):
         s_p500 = '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/s_p500.xlsx'
-        baseDir = '/media/louis/DATA/Courant_dataset_matlab/R/'
         
         multmap = AdjustingHashmap(s_p500)
         

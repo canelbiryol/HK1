@@ -1,12 +1,9 @@
 '''
-Created on Mar 28, 2018
-
-@author: canelbiryol
+TODO: WRITE SPEC
 '''
 
 import numpy as np
 import pandas as pd
-import json
 import time
 import os
 import csv
@@ -119,26 +116,34 @@ print('Initializing.')
 
 # FIRST: Take S&P500 tickers
 """ TO SPECIFY """
-s_p500 = "/Users/canelbiryol/HK1/s_p500.xlsx"
+s_p500 = '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/s_p500.xlsx'
 
 s_p500xls = pd.read_excel(open(s_p500,'rb'), sheet_name='WRDS')
 s_ptickers = np.unique((np.array(s_p500xls['Ticker Symbol'])).astype(str))
 s_ptickers = s_ptickers[:-1]
 print(s_ptickers)
 
-""" TO SPECIFY """
-baseDir = "/Users/canelbiryol/R"
+
+# S&P tickers
+s_p500xls = pd.read_excel(open(s_p500,'rb'), sheet_name='WRDS')
+s_ptickers = np.unique((np.array(s_p500xls['Ticker Symbol'])).astype(str))
+s_ptickers = s_ptickers[:-1]
 
 """ TO SPECIFY """
-filepathcln = "/Users/canelbiryol/Data/cleanData"
+baseDir = '/media/louis/DATA/Courant_dataset_matlab/R'
 
 """ TO SPECIFY """
-tickers_todo = '/Users/canelbiryol/HK1/split_adjust_clean.xlsx'
+filepathcln = '/media/louis/DATA/cleandata/'
 
-output = '/Users/canelbiryol/Data/stats'
+""" TO SPECIFY """
+tickers_todo = '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/split_adjust_clean.xlsx'
 
-list_tickers_xls = pd.read_excel(open(tickers_todo,'rb'), sheet_name='Canel')
-list_tickers = np.unique((np.array(s_p500xls['Ticker Symbol'])).astype(str))
+""" TO SPECIFY """
+output = '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/stats'
+
+""" TO SPECIFY """
+list_tickers_xls = pd.read_excel(open(tickers_todo,'rb'), sheet_name='Michael')
+list_tickers = np.unique((np.array(list_tickers_xls['Ticker Symbol'])).astype(str))
 list_tickers = list_tickers[:-1]
 
 # startDate = '20070620'
@@ -152,7 +157,6 @@ dates = os.listdir(baseDir + '/quotes/')
 D = len(dates)
 #Add dummy date
 dates.append('20070921')
-dates.remove('.DS_Store')
 dates.sort()
 
 stats = {}

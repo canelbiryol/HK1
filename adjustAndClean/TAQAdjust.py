@@ -1,10 +1,8 @@
-import pandas as pd
 import numpy as np
 import struct
 import gzip
 import os.path
 from os import access, R_OK
-from adjustAndClean.AdjustingHashmap import AdjustingHashmap
 
 class TAQAdjust(object):
     '''
