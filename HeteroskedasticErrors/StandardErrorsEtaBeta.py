@@ -23,17 +23,15 @@ def getCovarianceMatrix(X, sigmas, imbalances, ADVs, StdErrs):
     #Calculate J matrix
     J = np.zeros((N,2))
     for i in range(N):
-        k = imbalances[i]*6.5/ADVs[i]/6
-        J[i,0] = k**beta*sigmas[i]
-        J[i,1] = beta*eta*sigmas[i]*(k**(beta-1))
+        factor = imbalances[i] / (ADVs[i] * (6/6.5))
+        J[i,0] = pow(factor, beta) * sigmas[i]
+        J[i,1] = beta * eta * sigmas[i] * pow(factor, beta-1)
 
     W = np.zeros((N,N))
     for i in range(N):
-        W[i,i] = StdErrs[i]*StdErrs[i]
+        W[i,i] = pow(StdErrs[i], 2)
     
     M = np.linalg.inv(np.dot(np.transpose(J),J))
     R = np.dot(np.transpose(J), np.dot(W, J))
     
-    result = np.dot(M, np.dot(R, M))
-    
-    return result
+    return(np.dot(M, np.dot(R, M)))    
