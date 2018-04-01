@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from HeteroskedasticErrors.OptimizeEtaBeta import getOptimalEtaBeta
+from HeteroskedasticErrors.OptimizeEtaBeta import OptimizeEtaBeta
 
 class Test_OptimizeEtaBeta(unittest.TestCase):
 
@@ -61,7 +61,8 @@ class Test_OptimizeEtaBeta(unittest.TestCase):
         print(ADVs)
         print(StdErrs)
         
-        res = getOptimalEtaBeta(h, sigmas, imbalances, ADVs, StdErrs)
+        optimizer = OptimizeEtaBeta()
+        res = optimizer.getOptimalEtaBeta(h, sigmas, imbalances, ADVs, StdErrs)
         
         print(res)
 
