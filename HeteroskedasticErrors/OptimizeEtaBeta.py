@@ -39,7 +39,7 @@ def RSS_hetero(X, h, sigmas, imbalances, ADVs, StdErrs):
     
     RSS = 0
     for i in range(N):
-        RSS += pow((h[i] - eta * sigmas[i] * pow(imbalances[i] / ((6/6.5) * ADVs[i]), beta)) / StdErrs[i], 2)
+        RSS += pow((h[i] - eta * sigmas[i] * pow(abs(imbalances[i]) / ((6/6.5) * ADVs[i]), beta)) / StdErrs[i], 2)
      
     #Return the reweighted RSS, normalized to account for heteroskedasticity
     return RSS
@@ -65,7 +65,7 @@ def jacobianRSS(X, h, sigmas, imbalances, ADVs, StdErrs):
     result = np.zeros(2)
     
     for i in range(N):
-        factor = imbalances[i] / (ADVs[i] * (6/6.5))
+        factor = abs(imbalances[i]) / (ADVs[i] * (6/6.5))
         factorbeta = pow(factor, beta)
         factorbetam1 = pow(factor, beta -1)
         stderrsq = pow(StdErrs[i], 2)
@@ -89,6 +89,6 @@ def getOptimalEtaBeta(VWAP, ArrivalPrices, TerminalPrices, sigmas, imbalances, A
     startPoint = np.array([0.142, 0.6])
     h = getTempImpact(VWAP, ArrivalPrices, TerminalPrices)
     
-    optiResult = minimize(RSS_hetero, startPoint,  h, sigmas, imbalances, ADVs, StdErrs, method='BFGS', jac=jacobianRSS, options={'disp': True})
+    optiResult = minimize(fun=RSS_hetero, x0=startPoint, args=(h, sigmas, imbalances, ADVs, StdErrs), method='BFGS', jac=jacobianRSS, options={'disp': True})
     #Print eta and beta
     return(optiResult.x)
