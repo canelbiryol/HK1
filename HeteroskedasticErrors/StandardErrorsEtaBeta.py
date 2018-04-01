@@ -1,8 +1,9 @@
+import numpy as np
+from math import log
+
 '''
 TODO: Write Spec
 '''
-
-import numpy as np
 
 def getCovarianceMatrix(X, sigmas, imbalances, ADVs, StdErrs):
     '''X is the vector [eta, beta]'''
@@ -25,7 +26,7 @@ def getCovarianceMatrix(X, sigmas, imbalances, ADVs, StdErrs):
     for i in range(N):
         factor = imbalances[i] / (ADVs[i] * (6/6.5))
         J[i,0] = pow(factor, beta) * sigmas[i]
-        J[i,1] = beta * eta * sigmas[i] * pow(factor, beta-1)
+        J[i,1] = eta * sigmas[i] * log(factor) * pow(factor, beta)
 
     W = np.zeros((N,N))
     for i in range(N):

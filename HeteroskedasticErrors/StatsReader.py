@@ -1,4 +1,6 @@
 import pandas as pd
+import numpy as np
+from math import sqrt
 
 class StatsReader(object):
     '''
@@ -41,6 +43,9 @@ class StatsReader(object):
     def getImbalanceVector(self):
         return(self._imbalance)
 
+    def getTerminalPriceVector(self):
+        return(self._terminalprice)
+
     def getVWAPuntil330Vector(self):
         return(self._VWAPuntil330)
 
@@ -49,12 +54,67 @@ class StatsReader(object):
 
     def getVolVector(self):
         return(self._vol)
+    """    
+    def getVolMeans(self):
+        self._means = (self.getVolMeanTickers())
+        (self._newMat.mean(axis=1))
+    """        
+    def getVolMeanTickers(self):
+        return(self._newMat.mean(axis=1))
 
     def getImbalanceValueVector(self):
         return(self._imbalancevalue)
 
     def getSTD2minRetVector(self):
         return(self._std2minutereturn)
+    
+    # Average Daily Values (10 days loopback)
+    def getADValuesVector(self):
+        mat = self._vol * self._VWAPuntil400
+        roll = self.rollingWindow(mat,10)
+        
+        d = []
+        for i in range(0,9):
+            newWindow = [mat[j] for j in range(0,i+1)]
+            d.append(newWindow)
+        d = d + list(roll)
+
+        return(np.array([np.mean(x) for x in d]))
+
+    # Average Daily Volumes (10 days loopback)
+    def getADVolVector(self):
+        roll = self.rollingWindow(self._vol,10)
+        
+        d = []
+        for i in range(0,9):
+            newWindow = [self._vol[j] for j in range(0,i+1)]
+            d.append(newWindow)
+        d = d + list(roll)
+
+        return(np.array([np.mean(x) for x in d]))
+
+    # Sigmas (10 days loopback)
+    def getStdErrorVector(self):
+        roll = self.rollingWindow(self._std2minutereturn,10)
+        
+        d = []
+        for i in range(0,9):
+            newWindow = [self._std2minutereturn[j] for j in range(0,i+1)]
+            d.append(newWindow)
+        d = d + list(roll)
+        
+        average_std = lambda xarr: sqrt(sum(np.power(xarr, 2))/len(xarr))
+
+        return(np.array([average_std(arr) for arr in d]))
+    
+    # Auxiliary function to get 10 days windows
+    def rollingWindow(self, a, window):
+        
+        window = min(a.shape[-1], window)
+        shape = a.shape[:-1] + (a.shape[-1] - window + 1, window)
+        strides = a.strides + (a.strides[-1],)
+        
+        return np.lib.stride_tricks.as_strided(a, shape=shape, strides=strides)
 
     # To add if 2 minute returns needed
     #def get2minRetArraysVector(self):
