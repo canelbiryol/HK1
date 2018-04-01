@@ -8,11 +8,10 @@ class Test_StatsReader(unittest.TestCase):
     '''
     
     def test1(self):
-        stats = StatsReader('/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/stats/stats.xlsx')
+        stats = StatsReader('/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/stats/stats.xlsx', boolDisplay=True)
         
-        # Display
-        print(stats.get2minRetArraysVector())
-              
+        print(stats.getArrivalPriceVector())
+        
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.test1']
     unittest.main()

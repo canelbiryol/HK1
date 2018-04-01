@@ -5,7 +5,7 @@ We assume heteroskedastic errors.
 
 import numpy as np
 from scipy.optimize import minimize
-
+from math import log
 
 def getTempImpact(VWAP, ArrivalPrices, TerminalPrices):
     """Calculates the vector of temporary impact, h"""
@@ -67,28 +67,26 @@ def jacobianRSS(X, h, sigmas, imbalances, ADVs, StdErrs):
     for i in range(N):
         factor = abs(imbalances[i]) / (ADVs[i] * (6/6.5))
         factorbeta = pow(factor, beta)
-        factorbetam1 = pow(factor, beta -1)
         stderrsq = pow(StdErrs[i], 2)
         sigma = sigmas[i]
         hi = h[i]
 
         result[0] += sigma * factorbeta * (eta * sigma * factorbeta - hi) / stderrsq
-        result[1] += beta * eta * sigma * factorbetam1 * (eta * sigma * factorbeta - hi) / stderrsq
+        result[1] += log(abs(imbalances[i]) / (ADVs[i] * (6/6.5))) * eta * sigma * factorbeta * (eta * sigma * factorbeta - hi) / stderrsq
 
     return(2 * result)
     
-def getOptimalEtaBeta(VWAP, ArrivalPrices, TerminalPrices, sigmas, imbalances, ADVs, StdErrs):
+def getOptimalEtaBeta(h, sigmas, imbalances, ADVs, StdErrs):
     """Now the actual optimization code"""
     
     #Check for consistency
-    N = len(VWAP)
-    if (len(ArrivalPrices)!=N or len(TerminalPrices)!=N or len(sigmas)!=N or len(imbalances)!=N or len(ADVs)!=N or len(StdErrs)!=N):
+    N = len(ADVs)
+    if (len(ADVs)!=N or len(StdErrs)!=N):
         raise Exception('All inputs must have the same dimensionality.')
     
     # Almgren's values
     startPoint = np.array([0.142, 0.6])
-    h = getTempImpact(VWAP, ArrivalPrices, TerminalPrices)
     
     optiResult = minimize(fun=RSS_hetero, x0=startPoint, args=(h, sigmas, imbalances, ADVs, StdErrs), method='BFGS', jac=jacobianRSS, options={'disp': True})
     #Print eta and beta
-    return(optiResult.x)
+    return(optiResult)
