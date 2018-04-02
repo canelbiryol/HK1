@@ -12,6 +12,7 @@ class Test_StandardErrorsEtaBeta(unittest.TestCase):
         We try to retrieve the standard deviations of the residuals
         '''
         
+        ## First calculation
         sigmas = np.zeros(400000)
         imbalances = np.zeros(400000)
         ADVs = np.zeros(400000)
@@ -59,7 +60,7 @@ class Test_StandardErrorsEtaBeta(unittest.TestCase):
         
         stdDevCalculator = StandardErrorEtaBeta([eta, beta], sigmas, imbalances, ADVs, StdErrs)
         
-        # Order of magnitude expected : 10^-2 or 10^-3
+        # Order of magnitude expected : 10^-8 or 10^-9
         print(stdDevCalculator.getCovarianceMatrix())
         
         # Other possible test
@@ -75,6 +76,109 @@ class Test_StandardErrorsEtaBeta(unittest.TestCase):
         # Order of magnitude expected : 10^-5, 10^-6 or 10^-7
         print(stdDevCalculator.getCovarianceMatrix())
         """
+        
+        ## Should be larger now
+        sigmas = np.zeros(40000)
+        imbalances = np.zeros(40000)
+        ADVs = np.zeros(40000)
+        StdErrs = np.zeros(40000)
+        X = np.zeros(40000)
+        h = np.zeros(40000)
+        
+        eta = 3.0
+        beta = 1.5
+        
+        for i in range(10000):
+            # Stock 1
+            sigmas[i] = 0.3 + (np.random.rand() - np.random.rand()) * 0.03
+            imbalances[i] = np.random.normal(0,100000)
+            ADVs[i] = 30000 + (np.random.rand() - np.random.rand()) * 10000
+            X[i] = abs(imbalances[i]) / (ADVs[i] * (6/6.5))
+            StdErrs[i] = 1000
+            
+            # Stock 2
+            sigmas[i+10000] = 0.6 + (np.random.rand() - np.random.rand()) * 0.06
+            imbalances[i+10000] = np.random.normal(0,1000000)
+            ADVs[i+10000] = 60000 + (np.random.rand() - np.random.rand()) * 10000
+            X[i+10000] = abs(imbalances[i+10000]) / (ADVs[i+10000] * (6/6.5))
+            StdErrs[i+10000] = 2000
+
+            # Stock 3
+            sigmas[i+20000] = 0.9 + (np.random.rand() - np.random.rand()) * 0.09
+            imbalances[i+20000] = np.random.normal(0,100000)
+            ADVs[i+20000] = 90000 + (np.random.rand() - np.random.rand()) * 10000
+            X[i+20000] = abs(imbalances[i+20000]) / (ADVs[i+20000] * (6/6.5))
+            StdErrs[i+20000] = 3000
+
+            # Stock 4
+            sigmas[i+30000] = 1.2 + (np.random.rand() - np.random.rand()) * 0.12
+            imbalances[i+30000] = np.random.normal(0,1000000)
+            ADVs[i+30000] = 120000 + (np.random.rand() - np.random.rand()) * 10000
+            X[i+30000] = abs(imbalances[i+30000]) / (ADVs[i+30000] * (6/6.5))
+            StdErrs[i+30000] = 4000
+            
+            h[i] = eta * sigmas[i] * pow(X[i], beta) + StdErrs[i] * np.random.normal()
+            h[i+10000] = eta * sigmas[i+10000] * pow(X[i+10000], beta) + StdErrs[i+10000] * np.random.normal()
+            h[i+20000] = eta * sigmas[i+20000] * pow(X[i+20000], beta) + StdErrs[i+20000] * np.random.normal()
+            h[i+30000] = eta * sigmas[i+30000] * pow(X[i+30000], beta) + StdErrs[i+30000] * np.random.normal()
+        
+        
+        stdDevCalculator = StandardErrorEtaBeta([eta, beta], sigmas, imbalances, ADVs, StdErrs)
+        
+        # Order of magnitude expected : 10^-8 or 10^-9
+        print(stdDevCalculator.getCovarianceMatrix())
+
+
+        ## Should be very large now
+        sigmas = np.zeros(80)
+        imbalances = np.zeros(80)
+        ADVs = np.zeros(80)
+        StdErrs = np.zeros(80)
+        X = np.zeros(80)
+        h = np.zeros(80)
+        
+        eta = 3.0
+        beta = 1.5
+        
+        for i in range(20):
+            # Stock 1
+            sigmas[i] = 0.3 + (np.random.rand() - np.random.rand()) * 0.03
+            imbalances[i] = np.random.normal(0,1000000)
+            ADVs[i] = 30000 + (np.random.rand() - np.random.rand()) * 10000
+            X[i] = abs(imbalances[i]) / (ADVs[i] * (6/6.5))
+            StdErrs[i] = 1000
+            
+            # Stock 2
+            sigmas[i+20] = 0.6 + (np.random.rand() - np.random.rand()) * 0.06
+            imbalances[i+20] = np.random.normal(0,10000000)
+            ADVs[i+20] = 60000 + (np.random.rand() - np.random.rand()) * 10000
+            X[i+20] = abs(imbalances[i+20]) / (ADVs[i+20] * (6/6.5))
+            StdErrs[i+20] = 2000
+
+            # Stock 3
+            sigmas[i+40] = 0.9 + (np.random.rand() - np.random.rand()) * 0.09
+            imbalances[i+40] = np.random.normal(0,1000000)
+            ADVs[i+40] = 90000 + (np.random.rand() - np.random.rand()) * 10000
+            X[i+40] = abs(imbalances[i+40]) / (ADVs[i+40] * (6/6.5))
+            StdErrs[i+40] = 3000
+
+            # Stock 4
+            sigmas[i+60] = 1.2 + (np.random.rand() - np.random.rand()) * 0.12
+            imbalances[i+60] = np.random.normal(0,10000000)
+            ADVs[i+60] = 120000 + (np.random.rand() - np.random.rand()) * 10000
+            X[i+60] = abs(imbalances[i+60]) / (ADVs[i+60] * (6/6.5))
+            StdErrs[i+60] = 4000
+            
+            h[i] = eta * sigmas[i] * pow(X[i], beta) + StdErrs[i] * np.random.normal()
+            h[i+20] = eta * sigmas[i+20] * pow(X[i+20], beta) + StdErrs[i+20] * np.random.normal()
+            h[i+40] = eta * sigmas[i+40] * pow(X[i+40], beta) + StdErrs[i+40] * np.random.normal()
+            h[i+60] = eta * sigmas[i+60] * pow(X[i+60], beta) + StdErrs[i+60] * np.random.normal()
+        
+        
+        stdDevCalculator = StandardErrorEtaBeta([eta, beta], sigmas, imbalances, ADVs, StdErrs)
+        
+        # Order of magnitude expected : 10^-8 or 10^-9
+        print(stdDevCalculator.getCovarianceMatrix())
 
 if __name__ == "__main__":
     #import sys;sys.argv = ['', 'Test.test1']

@@ -56,6 +56,10 @@ plt.hist(residualsCleaned)
 print("Please close the plot to continue")
 plt.show()
 
+""" Analysis of residuals for hetero/homos-skedasticity """
+print('Analyzing standardized residuals')
+
+
 """ Analyze optimal eta and beta for active and passive stocks """ 
 ## ACTIVE
 print('Initialize statistics of active stocks for analysis')

@@ -20,6 +20,7 @@ class StandardErrorEtaBeta(object):
         #Checks for consistency
         N = len(self._sigmas)
         if (len(self._imbalances)!=N or len(self._ADVs)!=N or len(self._StdErrs)!=N):
+            print(len(self._imbalances), len(self._ADVs), len(self._StdErrs))
             raise Exception( 'All parameters should have the same length.' )
         for i in range(N):
             if self._StdErrs[i]<=1e-12:
@@ -49,11 +50,14 @@ class StandardErrorEtaBeta(object):
         """
         
         WJ = np.zeros((N,2))
+        norm = 0
         for i in range(N):
+            norm += pow(self._StdErrs[i], 2)
             WJ[i,0] = pow(self._StdErrs[i], 2) * J[i,0]
             WJ[i,1] = pow(self._StdErrs[i], 2) * J[i,1]
+        WJ = WJ / norm
         
         M = np.linalg.inv(np.dot(np.transpose(J),J))
         R = np.dot(np.transpose(J), WJ)
         
-        return(np.sqrt(np.diag(np.dot(M, np.dot(R, M)))))
+        return(np.dot(M, np.dot(R, M)))
