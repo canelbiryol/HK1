@@ -7,8 +7,9 @@ class Test_SplitTickers(unittest.TestCase):
     '''
     
     def test1(self):
+        indicestoDrop = [9, 28, 60, 79, 100, 104, 114, 137, 196, 246, 271, 324, 378, 388, 398, 407, 413, 425, 432, 444, 458]
 
-        s = SplitTickers()
+        s = SplitTickers(indicesToDrop=indicestoDrop)
         
         # Display
         print(s.getActiveStocks())

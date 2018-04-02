@@ -7,7 +7,7 @@ class Test_StatsReader(unittest.TestCase):
     '''
     
     def test1(self):
-        stats = StatsReader('/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/stats/stats.xlsx', boolDisplay=False)
+        stats = StatsReader(statsPath='/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/stats/stats.xlsx', boolDisplay=True, actPass=[False,False])
         
         print(stats.getADVolVector())
         print(stats.getADValuesVector())

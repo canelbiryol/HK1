@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from math import sqrt
+from HeteroskedasticErrors.SplitTickers import SplitTickers
 
 class StatsReader(object):
     '''
@@ -9,21 +10,23 @@ class StatsReader(object):
     numpy array, to be sent to OptimizeEtaBeta class.
     '''
 
-    def __init__(self, statsPath, boolDisplay):
+    def __init__(self, statsPath, boolDisplay=False, actPass=[False,False]):
+        
+        self._statsPath = statsPath
         self._xlsStats = pd.ExcelFile(statsPath)
         
-        # After visual inspection
+        # Remove each row where there's an empty cell
         indicesToDrop = self.getIndicesToDrop()
 
         # Instantiate attributes
-        self._arrivalprice = self.toVector(pd.read_excel(self._xlsStats, 'arrival_price'), indicesToDrop, boolDisplay).astype(float)
-        self._imbalance = self.toVector(pd.read_excel(self._xlsStats, 'imbalance'), indicesToDrop, boolDisplay).astype(float)
-        self._terminalprice = self.toVector(pd.read_excel(self._xlsStats, 'terminal_price'), indicesToDrop, boolDisplay).astype(float)
-        self._VWAPuntil330 = self.toVector(pd.read_excel(self._xlsStats, 'VWAPuntil330'), indicesToDrop, boolDisplay).astype(float)
-        self._VWAPuntil400 = self.toVector(pd.read_excel(self._xlsStats, 'VWAPuntil400'), indicesToDrop, boolDisplay).astype(float)
-        self._vol = self.toVector(pd.read_excel(self._xlsStats, 'vol'), indicesToDrop, boolDisplay).astype(float)
-        self._imbalancevalue = self.toVector(pd.read_excel(self._xlsStats, 'imbalance_value'), indicesToDrop, boolDisplay).astype(float)
-        self._std2minutereturn = self.toVector(pd.read_excel(self._xlsStats, 'std_2_min_returns'), indicesToDrop, boolDisplay).astype(float)
+        self._arrivalprice = self.toVector(pd.read_excel(self._xlsStats, 'arrival_price'), indicesToDrop, boolDisplay, actPass).astype(float)
+        self._imbalance = self.toVector(pd.read_excel(self._xlsStats, 'imbalance'), indicesToDrop, boolDisplay, actPass).astype(float)
+        self._terminalprice = self.toVector(pd.read_excel(self._xlsStats, 'terminal_price'), indicesToDrop, boolDisplay, actPass).astype(float)
+        self._VWAPuntil330 = self.toVector(pd.read_excel(self._xlsStats, 'VWAPuntil330'), indicesToDrop, boolDisplay, actPass).astype(float)
+        self._VWAPuntil400 = self.toVector(pd.read_excel(self._xlsStats, 'VWAPuntil400'), indicesToDrop, boolDisplay, actPass).astype(float)
+        self._vol = self.toVector(pd.read_excel(self._xlsStats, 'vol'), indicesToDrop, boolDisplay, actPass).astype(float)
+        self._imbalancevalue = self.toVector(pd.read_excel(self._xlsStats, 'imbalance_value'), indicesToDrop, boolDisplay, actPass).astype(float)
+        self._std2minutereturn = self.toVector(pd.read_excel(self._xlsStats, 'std_2_min_returns'), indicesToDrop, boolDisplay, actPass).astype(float)
         # To add if 2 minute returns needed
         #self._2minutereturn = self.toVector(pd.read_excel(self._xlsStats, '2_minute_returns'), indicesToDrop, boolDisplay).astype(ndarray)
 
@@ -38,17 +41,33 @@ class StatsReader(object):
         inds = np.concatenate((inds, np.array(np.where(np.asanyarray(np.isnan((pd.read_excel(self._xlsStats, 'vol').values[:,1:]).astype(float)))))[0]),0)
         inds = np.concatenate((inds, np.array(np.where(np.asanyarray(np.isnan((pd.read_excel(self._xlsStats, 'imbalance_value').values[:,1:]).astype(float)))))[0]),0)
         inds = np.concatenate((inds, np.array(np.where(np.asanyarray(np.isnan((pd.read_excel(self._xlsStats, 'std_2_min_returns').values[:,1:]).astype(float)))))[0]),0)
+        # To add if 2 minute returns needed
+        #inds = np.concatenate((inds, np.array(np.where(np.asanyarray(np.isnan((pd.read_excel(self._xlsStats, '2_minute_returns').values[:,1:]).astype(ndarray)))))[0]),0)
 
         inds = np.unique(inds)
         return(inds)
     
     # Flattens a pandas dataframe to a big vector
-    def toVector(self, pdMatrix, indicesDropped, display=False):
+    def toVector(self, pdMatrix, indicesDropped, display=False, actPass=False):
         newMat = pdMatrix.drop(pdMatrix.index[indicesDropped])
+        
+        
+        if actPass==[True,False]:
+            tickersSplitter = SplitTickers(self._statsPath, indicesDropped)
+            rightTickers = tickersSplitter.getActiveStocks()
+            newMat = newMat.loc[newMat['ticker'].isin(rightTickers)]
+        elif actPass==[False,True]:
+            tickersSplitter = SplitTickers(self._statsPath, indicesDropped)
+            rightTickers = tickersSplitter.getPassiveStocks()
+            newMat = newMat.loc[newMat['ticker'].isin(rightTickers)]
+        elif actPass==[True,True]:
+            raise Exception( 'Active or passive, one at a time please.' )
+        
         newMat.index = range(len(newMat))
+        
         if display:
             print(newMat)
-            
+        
         return((newMat.drop(['ticker'], axis=1)).values.flatten())
 
     # Getters

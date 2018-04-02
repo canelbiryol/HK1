@@ -6,7 +6,7 @@ class SplitTickers(object):
     To do so, sort their volume means in descending order.
     '''
 
-    def __init__(self, statsPath='/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/stats/stats.xlsx'):
+    def __init__(self, statsPath='/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/stats/stats.xlsx', indicesToDrop=[]):
         
         # Old: Do it with file sizes. Problematic because doesn't account for empty day/tickers
         """
@@ -21,9 +21,6 @@ class SplitTickers(object):
 
         xlsStats = pd.ExcelFile(statsPath)
         
-        # After visual inspection
-        indicesToDrop = [9, 100, 114, 137, 246, 324, 432, 444]
-
         pdMatrix = pd.read_excel(xlsStats, 'vol')
         self._newMat = pdMatrix.drop(pdMatrix.index[indicesToDrop])
         self._newMat.index = self._newMat['ticker']
