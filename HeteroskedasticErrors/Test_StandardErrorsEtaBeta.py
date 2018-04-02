@@ -12,7 +12,8 @@ class Test_StandardErrorsEtaBeta(unittest.TestCase):
         We try to retrieve the standard deviations of the residuals
         '''
         
-        ## First calculation
+        ## First calculation with very big sample size. Should be a good estimate.
+        print("First calculation, sample of size 400000")
         sigmas = np.zeros(400000)
         imbalances = np.zeros(400000)
         ADVs = np.zeros(400000)
@@ -60,24 +61,10 @@ class Test_StandardErrorsEtaBeta(unittest.TestCase):
         
         stdDevCalculator = StandardErrorEtaBeta([eta, beta], sigmas, imbalances, ADVs, StdErrs)
         
-        # Order of magnitude expected : 10^-8 or 10^-9
         print(stdDevCalculator.getCovarianceMatrix())
         
-        # Other possible test
-        """
-        X = [1.,1.]
-        sigmas = (np.random.random((1000, 1))).flatten() * pow(10,-2)
-        imbalances = (np.random.random((1000, 1))).flatten() * pow(10,4)
-        ADVs = (np.random.random((1000, 1))).flatten() * pow(10,5)
-        StdErrs = (np.random.random((1000, 1))).flatten() * pow(10,-3)
-        
-        stdDevCalculator = StandardErrorEtaBeta(X, sigmas, imbalances, ADVs, StdErrs)
-        
-        # Order of magnitude expected : 10^-5, 10^-6 or 10^-7
-        print(stdDevCalculator.getCovarianceMatrix())
-        """
-        
-        ## Should be larger now
+        ## Second calculation, with smaller sample test. Covariances should be larger now.
+        print("Second calculation, sample of size 40000. Relatively larger covariances expected")
         sigmas = np.zeros(40000)
         imbalances = np.zeros(40000)
         ADVs = np.zeros(40000)
@@ -125,11 +112,11 @@ class Test_StandardErrorsEtaBeta(unittest.TestCase):
         
         stdDevCalculator = StandardErrorEtaBeta([eta, beta], sigmas, imbalances, ADVs, StdErrs)
         
-        # Order of magnitude expected : 10^-8 or 10^-9
         print(stdDevCalculator.getCovarianceMatrix())
 
 
-        ## Should be very large now
+        ## Third and last calculation with ridiculously small sample. Should be very large now.
+        print("Last calculation, sample of size 80. Relatively much larger covariances expected")
         sigmas = np.zeros(80)
         imbalances = np.zeros(80)
         ADVs = np.zeros(80)
@@ -177,7 +164,6 @@ class Test_StandardErrorsEtaBeta(unittest.TestCase):
         
         stdDevCalculator = StandardErrorEtaBeta([eta, beta], sigmas, imbalances, ADVs, StdErrs)
         
-        # Order of magnitude expected : 10^-8 or 10^-9
         print(stdDevCalculator.getCovarianceMatrix())
 
 if __name__ == "__main__":
