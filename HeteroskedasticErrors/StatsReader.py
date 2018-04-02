@@ -17,6 +17,8 @@ class StatsReader(object):
         
         # Remove each row where there's an empty cell
         indicesToDrop = self.getIndicesToDrop()
+        
+        self._numberOfDays = len(pd.read_excel(self._xlsStats, 'arrival_price').columns)
 
         # Instantiate attributes
         self._arrivalprice = self.toVector(pd.read_excel(self._xlsStats, 'arrival_price'), indicesToDrop, boolDisplay, actPass).astype(float)
@@ -51,7 +53,6 @@ class StatsReader(object):
     def toVector(self, pdMatrix, indicesDropped, display=False, actPass=False):
         newMat = pdMatrix.drop(pdMatrix.index[indicesDropped])
         
-        
         if actPass==[True,False]:
             tickersSplitter = SplitTickers(self._statsPath, indicesDropped)
             rightTickers = tickersSplitter.getActiveStocks()
@@ -64,6 +65,7 @@ class StatsReader(object):
             raise Exception( 'Active or passive, one at a time please.' )
         
         newMat.index = range(len(newMat))
+        self._numberOfTickers = len(newMat.index)
         
         if display:
             print(newMat)
@@ -71,6 +73,12 @@ class StatsReader(object):
         return((newMat.drop(['ticker'], axis=1)).values.flatten())
 
     # Getters
+    def getNumberOfDays(self):
+        return(self._numberOfDays)
+    
+    def getNumberOfTickers(self):
+        return(self._numberOfTickers)
+    
     def getArrivalPriceVector(self):
         return(self._arrivalprice)
 
@@ -97,6 +105,10 @@ class StatsReader(object):
 
     def getSTD2minRetVector(self):
         return(self._std2minutereturn)
+    
+    # To add if 2 minute returns needed
+    #def get2minRetArraysVector(self):
+        #return(self._2minutereturn)
     
     # Average Daily Values (10 days loopback)
     def getADValuesVector(self):
@@ -146,6 +158,3 @@ class StatsReader(object):
         
         return np.lib.stride_tricks.as_strided(a, shape=shape, strides=strides)
 
-    # To add if 2 minute returns needed
-    #def get2minRetArraysVector(self):
-        #return(self._2minutereturn)

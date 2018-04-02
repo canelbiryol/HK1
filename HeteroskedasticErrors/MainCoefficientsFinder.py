@@ -4,6 +4,7 @@ from HeteroskedasticErrors.GetStdDev import GetStdDev
 from scipy import stats as st
 import matplotlib.pyplot as plt
 import numpy as np
+from HeteroskedasticErrors.WhiteTestHomoskedasticity import WhiteTestHomoskedasticity
 
 # Display configurations
 np.set_printoptions(threshold=50)
@@ -58,7 +59,11 @@ plt.show()
 
 """ Analysis of residuals for hetero/homos-skedasticity """
 print('Analyzing standardized residuals')
-
+wTest = WhiteTestHomoskedasticity(h, residuals, stats.getNumberOfDays())
+print(wTest.getCoefficients())
+print(wTest.getRSquared())
+# Reject homoskedasticity if p is very small
+print(wTest.getPValue())
 
 """ Analyze optimal eta and beta for active and passive stocks """ 
 ## ACTIVE
