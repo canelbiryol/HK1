@@ -4,7 +4,7 @@ from HeteroskedasticErrors.OptimizeEtaBeta import OptimizeEtaBeta
 
 class GetStdDev(object):
     '''
-    Back out the residuals' standard deviation from Almgren's values.
+    Back out the residuals' standard deviation (so called Lambdas vector) from Almgren's values.
     For a given stock, it is assumed to be constant over the timeframe.
     Could also be done via bootstrapping.
     '''
@@ -20,7 +20,7 @@ class GetStdDev(object):
         self._arrays_std = []
         
     def getLambdasVectorOneStep(self, eta0=0.142, beta0=0.6):
-        
+        # Get Lambdas from hypothesized values for eta and beta
         res = self._h - eta0 * self._sigmas * pow((abs(self._imbalances) / (self._ADVs * (6/6.5))), beta0)
         
         length = len(res)

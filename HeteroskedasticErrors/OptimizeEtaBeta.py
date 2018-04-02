@@ -1,7 +1,7 @@
 import numpy as np
-from scipy.optimize import minimize
 from math import log
-    
+from scipy.optimize import minimize
+from HeteroskedasticErrors.StandardErrorsEtaBeta import StandardErrorEtaBeta
 
 class OptimizeEtaBeta(object):
     '''
@@ -98,4 +98,16 @@ class OptimizeEtaBeta(object):
 
         # eta and beta, as well as optimizing info
         return(optiResult)
+    
+    def getTstatsEtaBeta(self, X, sigmas, imbalances, ADVs, StdErrs):
+        stdDevCalculator = StandardErrorEtaBeta(X, sigmas, imbalances, ADVs, StdErrs)
+        
+        stdDevColumn = stdDevCalculator.getCovarianceMatrix()
+        
+        print('stdDevs eta and beta:', np.diag(stdDevColumn))
+        
+        tstatEta = X[0] / stdDevColumn[0][0]
+        tstatBeta = X[1] / stdDevColumn[1][1]
+        
+        return(np.array([tstatEta,tstatBeta]))
     

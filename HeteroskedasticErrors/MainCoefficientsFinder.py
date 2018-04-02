@@ -38,5 +38,12 @@ print(np.unique(stdErrs))
 print('Computing optimal eta and beta')
 # Vector eta, beta
 res = optimizer.getOptimalEtaBeta(h, sigmas, imbalances, ADVs, np.ones(ADVs.shape))
+
+print('Eta and beta:', res.x)
+
+print('Computing t-statistics')
+
+tStats = optimizer.getTstatsEtaBeta(res.x, sigmas, imbalances, ADVs, stdErrs)
+
+print('t-statistics of Eta and beta:', tStats)
         
-print(res.x)
