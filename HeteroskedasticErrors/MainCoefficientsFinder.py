@@ -1,6 +1,8 @@
 from HeteroskedasticErrors.OptimizeEtaBeta import OptimizeEtaBeta
 from HeteroskedasticErrors.StatsReader import StatsReader
 from HeteroskedasticErrors.GetStdDev import GetStdDev
+import numpy as np
+np.set_printoptions(threshold=10000000)
 
 '''
 Main function to find optimal eta and beta coefficients.
@@ -23,11 +25,18 @@ imbalances = stats.getImbalanceVector()
 ADVs = stats.getADValuesVector()
 
 print('Retrieving the residuals standard deviations')
-# Lambda_is backed-out using Almgren's values
-StdErrs = GetStdDev(h, sigmas, imbalances, ADVs).getLambdasVector()
+stdDevGetter = GetStdDev(h, sigmas, imbalances, ADVs)
+# 1st SOLUTION: Try homoskedastic errors
+#stdErrs = np.ones(ADVs.shape)
+# 2nd SOLUTION: Back-out Lambdas vector in one step using Almgren's values
+#stdErrs = stdDevGetter.getLambdasVectorOneStep()
+# 3rd SOLUTION: Back-out Lambdas vector in one step (homosked->(eta,beta)->lambda_is from there
+stdErrs = stdDevGetter.getLambdasVectorOneStepHomo()
+
+print(stdErrs)
 
 print('Computing optimal eta and beta')
 # Vector eta, beta
-res = optimizer.getOptimalEtaBeta(h, sigmas, imbalances, ADVs, StdErrs)
+res = optimizer.getOptimalEtaBeta(h, sigmas, imbalances, ADVs, np.ones(ADVs.shape))
         
 print(res)

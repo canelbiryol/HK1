@@ -81,7 +81,7 @@ class OptimizeEtaBeta(object):
     
         return(2 * result)
         
-    def getOptimalEtaBeta(self, h, sigmas, imbalances, ADVs, StdErrs):
+    def getOptimalEtaBeta(self, h, sigmas, imbalances, ADVs, StdErrs, eta0=0.142, beta0=0.6, bound=(0,0)):
         """Now the actual optimization code"""
         
         #Check for consistency
@@ -89,9 +89,13 @@ class OptimizeEtaBeta(object):
         if (len(ADVs)!=N or len(StdErrs)!=N):
             raise Exception('All inputs must have the same dimensionality.')
         
-        # Almgren's values
-        startPoint = np.array([0.142, 0.6])
+        startPoint = np.array([eta0, beta0])
         
-        optiResult = minimize(fun=self.RSS_hetero, x0=startPoint, args=(h, sigmas, imbalances, ADVs, StdErrs), method='BFGS', jac=self.jacobianRSS, options={'disp': True})
-        #Print eta and beta
+        if (bound[0] == bound[1]):
+            optiResult = minimize(fun=self.RSS_hetero, x0=startPoint, args=(h, sigmas, imbalances, ADVs, StdErrs), method='BFGS', jac=self.jacobianRSS, options={'disp': True})
+        else:
+            optiResult = minimize(fun=self.RSS_hetero, x0=startPoint, args=(h, sigmas, imbalances, ADVs, StdErrs), method='SLSQP', jac=self.jacobianRSS, bounds=[bound, bound], options={'disp': True})
+
+        # eta and beta, as well as optimizing info
         return(optiResult)
+    

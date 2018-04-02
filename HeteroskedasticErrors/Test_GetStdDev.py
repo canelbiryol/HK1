@@ -56,7 +56,9 @@ class Test_OptimizeEtaBeta(unittest.TestCase):
             h[i+200000] = eta * sigmas[i+200000] * pow(X[i+200000], beta) + StdErrs[i+200000] * np.random.normal()
             h[i+300000] = eta * sigmas[i+300000] * pow(X[i+300000], beta) + StdErrs[i+300000] * np.random.normal()
         
-        res = GetStdDev(h, sigmas, imbalances, ADVs, Ndays=100000, eta0=3.0, beta0=1.5).getLambdasVector()
+        res = GetStdDev(h, sigmas, imbalances, ADVs, Ndays=100000).getLambdasVectorOneStep(eta0=3.0, beta0=1.5)
+        
+        # Expected (approximately): 1000, 2000, 3000, 4000
         print(res)
 
 if __name__ == "__main__":
