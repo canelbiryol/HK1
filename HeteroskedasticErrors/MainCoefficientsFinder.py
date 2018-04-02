@@ -33,7 +33,7 @@ stdDevGetter = GetStdDev(h, sigmas, imbalances, ADVs)
 # 3rd SOLUTION: Back-out Lambdas vector in one step (homosked->(eta,beta)->lambda_is from there
 stdErrs = stdDevGetter.getLambdasVectorOneStepHomo()
 
-print(np.unique(stdErrs))
+#print('Lambdas residuals', np.unique(stdErrs))
 
 print('Computing optimal eta and beta')
 # Vector eta, beta

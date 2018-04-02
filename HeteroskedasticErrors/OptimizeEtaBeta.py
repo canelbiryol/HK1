@@ -102,12 +102,12 @@ class OptimizeEtaBeta(object):
     def getTstatsEtaBeta(self, X, sigmas, imbalances, ADVs, StdErrs):
         stdDevCalculator = StandardErrorEtaBeta(X, sigmas, imbalances, ADVs, StdErrs)
         
-        stdDevColumn = stdDevCalculator.getCovarianceMatrix()
+        stdDev = stdDevCalculator.getCovarianceMatrix()
         
-        print('stdDevs eta and beta:', np.diag(stdDevColumn))
+        print('stdDevs eta and beta:', stdDev)
         
-        tstatEta = X[0] / stdDevColumn[0][0]
-        tstatBeta = X[1] / stdDevColumn[1][1]
+        tstatEta = X[0] / stdDev[0]
+        tstatBeta = X[1] / stdDev[1]
         
         return(np.array([tstatEta,tstatBeta]))
     

@@ -56,4 +56,4 @@ class StandardErrorEtaBeta(object):
         M = np.linalg.inv(np.dot(np.transpose(J),J))
         R = np.dot(np.transpose(J), WJ)
         
-        return(np.sqrt(np.dot(M, np.dot(R, M))))
+        return(np.sqrt(np.diag(np.dot(M, np.dot(R, M)))))
