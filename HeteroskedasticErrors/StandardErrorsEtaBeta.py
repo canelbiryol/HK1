@@ -39,7 +39,15 @@ class StandardErrorEtaBeta(object):
             factor = abs(self._imbalances[i]) / (self._ADVs[i] * (6/6.5))
             J[i,0] = pow(factor, beta) * self._sigmas[i]
             J[i,1] = eta * self._sigmas[i] * log(factor) * pow(factor, beta)
-    
+        
+        """
+        W = np.zeros((N,1))
+        for i in range(N):
+            W[i,0] = pow(self._StdErrs[i], 2)
+            
+        print(W)
+        """
+        
         WJ = np.zeros((N,2))
         for i in range(N):
             WJ[i,0] = pow(self._StdErrs[i], 2) * J[i,0]
@@ -48,4 +56,4 @@ class StandardErrorEtaBeta(object):
         M = np.linalg.inv(np.dot(np.transpose(J),J))
         R = np.dot(np.transpose(J), WJ)
         
-        return(np.dot(M, np.dot(R, M)))
+        return(np.sqrt(np.dot(M, np.dot(R, M))))
