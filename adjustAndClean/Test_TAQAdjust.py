@@ -34,8 +34,8 @@ class Test_TAQAdjust2(unittest.TestCase):
         # So for the sake of example we modified them.
         adjuster.getPriceMult("20070620")
         adjuster.getVolMult("20070620")
-        adjuster.setPriceMult("20070620", 0.5)
-        adjuster.setVolMult("20070620", 0.25)
+        adjuster.setPriceMult("20070620", 2.0)
+        adjuster.setVolMult("20070620", 4.0)
         adjuster.getPriceMult("20070620")
         adjuster.getVolMult("20070620")
         

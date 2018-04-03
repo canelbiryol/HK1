@@ -27,8 +27,8 @@ class Test_WriteBinaryMethods(unittest.TestCase):
         
         # Write after reading and adjusting
         adjuster = TAQAdjust( stackedQuotes, stackedTrades, 'IBM', multmap )
-        adjuster.setPriceMult("20070621", 0.5)
-        adjuster.setVolMult("20070621", 0.25)
+        adjuster.setPriceMult("20070621", 2.0)
+        adjuster.setVolMult("20070621", 4.0)
         adjuster.adjustQuote()
         adjuster.adjustTrade()
         adjuster.storeAdjustedQuotes(filepathadj)

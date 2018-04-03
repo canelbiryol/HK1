@@ -31,10 +31,10 @@ class TAQAdjust(object):
         vol_mults = np.array([self._multMap.getVolMultiplier(self._ticker, date) for date in self._quotes[:,0]])
         price_mults = np.array([self._multMap.getPriceMultiplier(self._ticker, date) for date in self._quotes[:,0]])
 
-        self._quotes[:,-1] =  (self._quotes[:,-1]).astype(float) * vol_mults
-        self._quotes[:,-2] =  (self._quotes[:,-2]).astype(float) * price_mults
-        self._quotes[:,-3] =  (self._quotes[:,-3]).astype(float) * vol_mults
-        self._quotes[:,-4] =  (self._quotes[:,-4]).astype(float) * price_mults
+        self._quotes[:,-1] =  (self._quotes[:,-1]).astype(float) / vol_mults
+        self._quotes[:,-2] =  (self._quotes[:,-2]).astype(float) / price_mults
+        self._quotes[:,-3] =  (self._quotes[:,-3]).astype(float) / vol_mults
+        self._quotes[:,-4] =  (self._quotes[:,-4]).astype(float) / price_mults
 
     # Apply price and volume multipliers to trades data
     def adjustTrade(self):
@@ -42,8 +42,8 @@ class TAQAdjust(object):
         volt_mults = np.array([self._multMap.getVolMultiplier(self._ticker, date) for date in self._trades[:,0]])
         pricet_mults = np.array([self._multMap.getPriceMultiplier(self._ticker, date) for date in self._trades[:,0]])
 
-        self._trades[:,-1] =  (self._trades[:,-1]).astype(float) * volt_mults
-        self._trades[:,-2] =  (self._trades[:,-2]).astype(float) * pricet_mults
+        self._trades[:,-1] =  (self._trades[:,-1]).astype(float) / volt_mults
+        self._trades[:,-2] =  (self._trades[:,-2]).astype(float) / pricet_mults
 
     def getStackedQuotes(self):
         return(self._quotes)
