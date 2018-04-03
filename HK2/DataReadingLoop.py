@@ -8,10 +8,10 @@ import time
 import os
 import csv
 from adjustAndClean.StackData import StackData
-from impactModel.TickTest import TickTest
+from HK2.Stats import Stats
 
-
-keys = ['arrival_price', 'imbalance', 'terminal_price', 'VWAPuntil330', 'VWAPuntil400', 'vol', 'imbalance_value', '2_minute_returns', 'std_2_min_returns']
+keys = ['arrival_price', 'imbalance', 'terminal_price', 'VWAPuntil330', 'VWAPuntil400', 'vol', 'imbalance_value', 'std_2_min_returns']
+# , '2_minute_returns'
 
 times = {
     '9:30': 19 * 60 * 60 * 1000 / 2,
@@ -20,76 +20,6 @@ times = {
     '2min': 2 * 60 * 100
 }
 
-# print(int(times['16:00'] - times['9:30']) / times['2min'])
-# compute 2-min mid-quote returns
-def getXMinMidQuoteRet(data, delta):
-    nRecs = len(data) 
-    lastTs = int(data[0][1])
-    lastMidQuote = (float(data[0][2]) + float(data[0][4])) / 2 
-    
-    midQuoteReturns = []
-    for startI in range( 1, nRecs ):
-        timestamp = int(data[startI][1])       
-            
-        # check this
-        if timestamp > (lastTs + delta): 
-            midQuote = (float(data[startI][2]) + float(data[startI][4])) / 2 
-            midQuoteReturns.append( (midQuote / lastMidQuote) - 1 )
-            lastTs = lastTs + delta
-            lastMidQuote = midQuote
-            
-    return midQuoteReturns
-
-# compute STD of 2-min mid-quote returns
-def getSTDXMinMidQuoteRet(midQuoteReturns):
-    return np.std(midQuoteReturns) * np.sqrt(252)
-
-# compute total daily vol
-def getTotalDailyVol(data):
-    return int(np.sum([d[1] for d in data]))
-
-# compute arrival price - average of first five mid-quote prices
-def getArrivalPrice(data, n):
-    midquotes = [None] * n
-
-    for i in range(n):
-        midquotes[i] = (data[i][2] + data[i][4]) / 2 
-
-    return np.mean(midquotes)
-
-# compute terminal price - average of last 5 mid-quote prices
-def getTerminalPrice(data, n):
-    midquotes = [None] * n
-    
-    for i in range(n):
-        midquotes[i] = (data[-(i+1)][2] + data[-(i+1)][4]) / 2
-
-    return np.mean(midquotes)
-
-# compute volume weighted average price
-def getVWAP(data, startTS, endTS):
-    v = 0
-    s = 0
-    counter = 0
-    for i in range( 0, len(data) ):
-        if( float(data[i][1]) < startTS ):
-            continue
-        if( float(data[i][1]) >= endTS ):
-            break
-        
-        counter = counter + 1
-        v = v + ( data[i][2] * data[i][3] )
-        s = s + data[i][3]
-    
-    return v / s
-
-# compute imbalance using the modified TickTest from impactModel
-def getImbalance(data):
-    tickTest = TickTest()
-    classifications = tickTest.classifyAll( data, times['9:30'], times['15:30'] )
-    
-    imbalance = sum([ c[1] * c[2] for c in classifications])
-    return imbalance
   
 # export each matrices to csv file. Each rows are tickers and each columns are days
 def exportToCSV(data, key):
@@ -182,21 +112,22 @@ for i in range(D - 1):
             stack = StackData(filepathcln, startDate, endDate, ticker)
             stack.addQuotes()
             stack.addTrades()
-             
+            
             quotes = stack.getStackedQuotes()
             trades = stack.getStackedTrades() 
-             
-            stats['arrival_price'][ticker][startDate] = getArrivalPrice(quotes, 5)
-            stats['imbalance'][ticker][startDate] = getImbalance(trades)      
-            stats['terminal_price'][ticker][startDate] = getTerminalPrice(quotes, 5) 
-            stats['VWAPuntil330'][ticker][startDate] = getVWAP(trades, times['9:30'], times['15:30'])
-            stats['VWAPuntil400'][ticker][startDate] = getVWAP(trades, times['9:30'], times['16:00'])     
-            stats['vol'][ticker][startDate] = getTotalDailyVol(trades)
+        
+            statsClass = Stats(trades, quotes)
+            stats['arrival_price'][ticker][startDate] = statsClass.getArrivalPrice(5)
+            stats['terminal_price'][ticker][startDate] = statsClass.getTerminalPrice(5)
+            stats['imbalance'][ticker][startDate] = statsClass.getImbalance(times['9:30'], times['15:30'])       
+            stats['VWAPuntil330'][ticker][startDate] = statsClass.getVWAP(times['9:30'], times['15:30'])
+            stats['VWAPuntil400'][ticker][startDate] = statsClass.getVWAP(times['9:30'], times['16:00'])    
+            stats['vol'][ticker][startDate] = statsClass.getTotalDailyVol()
             stats['imbalance_value'][ticker][startDate] = stats['imbalance'][ticker][startDate] * stats['VWAPuntil400'][ticker][startDate]
             
-            quoteReturns = getXMinMidQuoteRet(quotes, times['2min'])
-            stats['2_minute_returns'][ticker][startDate] = quoteReturns
-            stats['std_2_min_returns'][ticker][startDate] = getSTDXMinMidQuoteRet(quoteReturns)
+            quoteReturns = statsClass.getXMinMidQuoteRet(times['2min'])
+#             stats['2_minute_returns'][ticker][startDate] = quoteReturns
+            stats['std_2_min_returns'][ticker][startDate] = statsClass.getSTDXMinMidQuoteRet(quoteReturns)
             
         except Exception as e:
             print("!!!! Failed processing ticker: {:s} : {:s}".format(ticker, str(e)))
