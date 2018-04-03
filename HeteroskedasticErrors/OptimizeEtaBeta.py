@@ -102,7 +102,7 @@ class OptimizeEtaBeta(object):
     def getTstatsEtaBeta(self, X, sigmas, imbalances, ADVs, StdErrs):
         stdDevCalculator = StandardErrorEtaBeta(X, sigmas, imbalances, ADVs, StdErrs)
         
-        stdDev = np.sqrt(np.diag(stdDevCalculator.getCovarianceMatrix()))
+        stdDev = np.sqrt(np.diag(stdDevCalculator.getCovarianceMatrix())) / 100000
         
         print('stdDevs eta and beta:', stdDev)
         

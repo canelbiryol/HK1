@@ -59,11 +59,10 @@ plt.show()
 
 """ Analysis of residuals for hetero/homos-skedasticity """
 print('Analyzing standardized residuals')
-wTest = WhiteTestHomoskedasticity(h, residuals, stats.getNumberOfDays())
-print(wTest.getCoefficients())
-print(wTest.getRSquared())
+wTest = WhiteTestHomoskedasticity(residuals, stats.getNumberOfTickers())
 # Reject homoskedasticity if p is very small
-print(wTest.getPValue())
+print("p-value of White's test is (small means heteroskedastic, as expected):", wTest.getPValue())
+
 
 """ Analyze optimal eta and beta for active and passive stocks """ 
 ## ACTIVE

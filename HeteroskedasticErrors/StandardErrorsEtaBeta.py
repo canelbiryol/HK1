@@ -50,12 +50,12 @@ class StandardErrorEtaBeta(object):
         """
         
         WJ = np.zeros((N,2))
-        norm = 0
+        #norm = 0
         for i in range(N):
-            norm += pow(self._StdErrs[i], 2)
+            #norm += pow(self._StdErrs[i], 2)
             WJ[i,0] = pow(self._StdErrs[i], 2) * J[i,0]
             WJ[i,1] = pow(self._StdErrs[i], 2) * J[i,1]
-        WJ = WJ / norm
+        #WJ = WJ / norm
         
         M = np.linalg.inv(np.dot(np.transpose(J),J))
         R = np.dot(np.transpose(J), WJ)

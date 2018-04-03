@@ -1,67 +1,43 @@
 import numpy as np
 from scipy.stats import chi2
-from scipy.optimize import minimize
 
 class WhiteTestHomoskedasticity(object):
     '''
-    TODO: Write Spec
+    We try: 
+        H0: residuals^2 = delta_0 for ticker A; residuals^2 = delta_1 for ticker B ... (heteroskedastic)
+        against
+        H1: residuals^2 = delta for all stocks (homoskedastic)
+        
+    In each case, the best deltas are the arithmetic mean of the samples (empirical variances since the residuals are centered)
     
-    FOR EXPLANATION, SEE SLIDE 9 OF: http://www.fsb.miamioh.edu/evenwe/courses/eco311/sp2017/notes/ch8_notes.pptx
-    
-    To call with: y - fitted temporary impact of the main regression
-                  residuals - residuals of the regression of temp impact against ...
-                  degreesOfFreedom - stats.getNumberOfDays() (or stats.getNumberOfTickers ??)
-    TODO: Test (Test_WhiteTest)
+    To call with: residuals - residuals of the regression of temp impact against ...
+                  degreesOfFreedom - stats.getNumberOfTickers
     '''
 
-    def __init__(self, y, residuals, degreesOfFreedom):
+    def __init__(self, residuals, degreesOfFreedom):
 
         # Check for consistency
-        self._N = len(residuals)
-        if (len(residuals)!=self._N or len(y)!=self._N):
-            raise Exception( 'All parameters should have the same length.' )
+        if (len(residuals) % degreesOfFreedom != 0):
+            raise Exception( 'Residuals should be the vector of residuals stacked by category.' )
 
-        self._y = y
         self._df = degreesOfFreedom
-        self._residuals = residuals
-        self._residualsbar = np.sum(residuals)/len(residuals)
+        self._numberOfObservation = int(len(residuals) / degreesOfFreedom)
+        self._residualsSquared = np.power(residuals, 2)
+        self._residualsSquaredBar = np.mean(self._residualsSquared)
         
         # Fit the model
-        self._alpha, self._gamma = self.fitWhiteRegression().x[0], self.fitWhiteRegression().x[1]
-        self._fittedResiduals = self._alpha * self._y + self._gamma * np.power(self._y,2)
-
-    def RSS(self, X, residuals, y):
+        self._residualsHomo = self._residualsSquaredBar * np.ones_like(self._residualsSquared)
+        self._residualsHetero = np.array([np.mean(self._residualsSquared[i * self._numberOfObservation : (i+1) * self._numberOfObservation]) * np.ones(self._numberOfObservation) for i in range(0, self._df)]).flatten()
         
-        alpha = X[0]
-        gamma = X[1]
-
-        RSS = 0
-        for i in range(self._N):
-            RSS += pow(pow(residuals[i],2) - alpha * y[i] - gamma * pow(y[i],2),2)
-
-        return RSS
-    
-    def fitWhiteRegression(self, alpha0=1., gamma0=1.):
-
-        startPoint = np.array([alpha0, gamma0])
-        optiResult = minimize(fun=self.RSS, x0=startPoint, args=(self._residuals, self._y), method='BFGS', options={'disp': True})
-        
-        # alpha and gamma, as well as optimizing info
-        return(optiResult)
-
     def getTSS(self):
-        return(np.sum(pow((self._residuals - self._residualsbar),2)))
+        return(np.sum(pow((self._residualsHomo - self._residualsSquared),2)))
     
     def getRegSS(self):
-        return(np.sum(pow((self._fittedResiduals - self._residualsbar),2)))
+        return(np.sum(pow((self._residualsHetero - self._residualsSquared),2)))
     
     def getRSquared(self):
-        return(self.getRegSS()/self.getTSS())
+        return(1 - self.getRegSS()/self.getTSS())
     
     def getPValue(self):
-        return(chi2.pdf(self._df * self.getRSquared(), self._df))
-    
-    def getCoefficients(self):
-        return(np.array([self._alpha, self._gamma]))
-    
+        return(chi2.pdf(self._numberOfObservation * self.getRSquared(), self._df - 1))
     
