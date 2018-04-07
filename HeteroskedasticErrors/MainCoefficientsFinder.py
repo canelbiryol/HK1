@@ -55,7 +55,8 @@ reject_outliers = lambda data, m: data[abs(data - np.mean(data)) < m * np.std(da
 residualsCleaned = reject_outliers(residuals,4)
 plt.hist(residualsCleaned)
 print("Please close the plot to continue")
-plt.show()
+#plt.show()
+plt.savefig("residuals.png")
 
 """ Analysis of residuals for hetero/homos-skedasticity """
 print('Analyzing standardized residuals')
