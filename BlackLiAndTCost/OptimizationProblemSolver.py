@@ -47,6 +47,26 @@ annualCovAritReturns = covAritReturns * 252
 annualExpLogReturns = [(x + 1)**252 - 1 for x in expLogReturns]
 annualExpAritReturns = [(x + 1)**252 - 1 for x in expAritReturns]
 
+# Keep only PC of the covariance matrix
+eigVal, eigVec = np.linalg.eig(annualCovAritReturns)
+
+newEigVal = eigVal[eigVal.real == eigVal]
+
+print(newEigVal,len(newEigVal), len(eigVal))
+"""
+eigenvalues = XX[0][:50]
+eigenvectorsMatrix = XX[1][:,:50]
+print(eigenvalues, eigenvectorsMatrix)
+pcCovarianceMatrix = np.zeros((m,m))
+for x in range(50):
+    pcCovarianceMatrix += float(eigenvalues[x]) * np.outer(np.array(eigenvectorsMatrix[:,x]).astype(float), np.array(eigenvectorsMatrix[:,x]).astype(float))
+    
+print(pcCovarianceMatrix)
+annualCovAritReturns = pcCovarianceMatrix
+"""
+#print(np.linalg.eig(P), "STOP")
+#print(P,"STOP")
+
 # Define the market impact function
 TC = lambda dayImbalance, dayVolume, sigma, eta=.142, beta=.6 : eta * sigma * pow( abs(dayImbalance) / ((6/6.5) * dayVolume), beta)
 
@@ -54,7 +74,7 @@ TC = lambda dayImbalance, dayVolume, sigma, eta=.142, beta=.6 : eta * sigma * po
 print('Start the sequential optimization')
 aversionLambda = 1.
 gamma = 1.
-P = matrix(-aversionLambda * annualCovAritReturns)
+P = matrix(-2 * aversionLambda * annualCovAritReturns)
 mu = annualExpAritReturns
 initialWeights = np.random.uniform(low=-1.,high=1.,size = m)
 initialWeights = initialWeights / np.linalg.norm(initialWeights)
@@ -75,12 +95,16 @@ for day in range(1,2):
     h = matrix(np.ones((1,1)).flatten() + np.dot(initialWeights, TCVector))
     q = matrix(mu - gamma * TCVector)
 
-    #print(np.dot(initialWeights, TCVector))    
-    #print(TCVector)
-    #print(G)
-    #print(h)
-    #print(q)
+    #print(initialWeights,"STOP")
+    #print(np.dot(initialWeights, TCVector),"STOP")    
+    #print(TCVector,"STOP")
+    #print(G,"STOP")
+    #print(h,"STOP")
+    #print(q,"STOP")
+    
+    A = matrix(np.ones((1,m)).flatten()).T
+    b = matrix(np.ones((1,1)).flatten())
 
-    optWeightSeq[day,:] = - qp(-P, -q, G, h, initvals = optWeightSeq[:,day-1])['x']
+    optWeightSeq[day,:] = - qp(-P, -q, G, h, A,b, initvals = optWeightSeq[:,day-1])['x']
     retSeq[day] = np.dot(mu, optWeightSeq[day,:])
     riskSeq[day] = np.dot(optWeightSeq[day,:], np.dot(annualCovAritReturns, optWeightSeq[day,:]))
