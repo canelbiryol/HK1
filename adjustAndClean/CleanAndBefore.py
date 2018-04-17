@@ -33,7 +33,7 @@ def plotCleanAndBefore(s_p500, baseDir, filePathcln, ticker):
     print('Finished building multipliers map', ticker)
     
     # Stack
-    stack = StackData(baseDir, '20070625', '20070929', ticker)
+    stack = StackData(baseDir, '20070720', '20070730', ticker)
     stack.addQuotes()
     stack.addTrades()
     print('Finished stacking', ticker)
@@ -55,6 +55,14 @@ def plotCleanAndBefore(s_p500, baseDir, filePathcln, ticker):
     cleaner = TAQCleaner( quotes, trades, ticker )
     quotes = quotes[cleaner.cleanQuotesIndices()==True,:]
     trades = trades[cleaner.cleanTradesIndices()==True,:]
+    lq1 = len(quotesbefore)
+    lq2 = len(quotes)
+    lt1 = len(tradesbefore)
+    lt2 = len(trades)
+    print('q before, q after', lq1, lq2)
+    print('t before, t after', lt1, lt2)
+    print('% trades removed:', (lt1 - lt2) / lt1)
+    print('% quotes removed:', (lq1 - lq2) / lq1)
     print('Finished cleaning', ticker)
 
     # Plot quotes
@@ -72,5 +80,5 @@ if __name__ == '__main__':
     s_p500 = '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/s_p500.xlsx'
     baseDir = '/media/louis/DATA/Courant_dataset_matlab/R'
     filepathcln = '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/plots/'
-    ticker = 'MSFT'
+    ticker = 'AAPL'
     plotCleanAndBefore(s_p500, baseDir, filepathcln, ticker)

@@ -1,8 +1,3 @@
-'''
-Created on Apr 15, 2018
-
-@author: Michael
-'''
 import unittest
 import numpy as np
 from MatrixTools.CovarianceMatrices import CovarianceCalculator

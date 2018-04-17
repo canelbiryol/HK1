@@ -11,7 +11,7 @@ class TAQCleaner(object):
     Default values for k and gamma were those given by the simulation (cf. CleanCalibration.py)
     '''
 
-    def __init__(self, stackedQuotes, stackedTrades, ticker, kT=45, gammaT=0.0005, kQ=45, gammaQ=0.0005):
+    def __init__(self, stackedQuotes, stackedTrades, ticker, kT=25, gammaT=0.0005, kQ=25, gammaQ=0.0005):
         '''
         Constructor: initialize attributes
         '''

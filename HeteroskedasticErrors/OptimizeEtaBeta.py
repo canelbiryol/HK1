@@ -44,8 +44,11 @@ class OptimizeEtaBeta(object):
         
         RSS = 0
         for i in range(N):
-            RSS += pow((h[i] - eta * sigmas[i] * pow(abs(imbalances[i]) / ((6/6.5) * ADVs[i]), beta)) / StdErrs[i], 2)
-         
+            try:
+                RSS += pow((h[i] - eta * sigmas[i] * pow(abs(imbalances[i]) / ((6/6.5) * ADVs[i]), beta)) / StdErrs[i], 2)
+            except RuntimeWarning as e:
+                print(h[i], sigmas[i], imbalances[i], ADVs[i], StdErrs[i])
+                print(e)
         #Return the reweighted RSS, normalized to account for heteroskedasticity
         return RSS
     

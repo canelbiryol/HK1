@@ -10,7 +10,7 @@ import csv
 from adjustAndClean.StackData import StackData
 from HK2.Stats import Stats
 
-keys = ['arrival_price', 'imbalance', 'terminal_price', 'VWAPuntil330', 'VWAPuntil400', 'vol', 'imbalance_value', 'std_2_min_returns']
+keys = ['arrival_price', 'imbalance', 'terminal_price', 'VWAPuntil330', 'VWAPuntil400', 'vol', 'imbalance_value', '2_minute_returns', 'std_2_min_returns']
 # , '2_minute_returns'
 
 times = {
@@ -72,8 +72,9 @@ tickers_todo = '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/split_a
 output = '/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/stats'
 
 """ TO SPECIFY """
-list_tickers_xls = pd.read_excel(open(tickers_todo,'rb'), sheet_name='Michael')
-list_tickers = np.unique((np.array(list_tickers_xls['Ticker Symbol'])).astype(str))
+#list_tickers_xls = pd.read_excel(open(tickers_todo,'rb'), sheet_name='Michael')
+#list_tickers = np.unique((np.array(list_tickers_xls['Ticker Symbol'])).astype(str))
+list_tickers = s_ptickers
 
 # startDate = '20070620'
 # endDate = '20070921'
@@ -126,7 +127,7 @@ for i in range(D - 1):
             stats['imbalance_value'][ticker][startDate] = stats['imbalance'][ticker][startDate] * stats['VWAPuntil400'][ticker][startDate]
             
             quoteReturns = statsClass.getXMinMidQuoteRet(times['2min'])
-#             stats['2_minute_returns'][ticker][startDate] = quoteReturns
+            stats['2_minute_returns'][ticker][startDate] = quoteReturns
             stats['std_2_min_returns'][ticker][startDate] = statsClass.getSTDXMinMidQuoteRet(quoteReturns)
             
         except Exception as e:

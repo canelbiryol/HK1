@@ -1,8 +1,3 @@
-'''
-Created on Apr 16, 2018
-
-@author: Michael
-'''
 import unittest
 import numpy as np
 from MatrixTools.ExtraCreditCovariance import ExtraCreditCovariance
