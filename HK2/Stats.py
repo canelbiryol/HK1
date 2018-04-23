@@ -4,6 +4,7 @@ Created on Apr 3, 2018
 @author: canelbiryol
 '''
 import numpy as np
+from numpy import floor
 from impactModel.TickTest import TickTest
 
 class Stats(object):
@@ -20,24 +21,44 @@ class Stats(object):
     def getXMinMidQuoteRet(self, delta):
         data = self._quotes
         nRecs = len(data) 
-        lastTs = int(data[0][1])
         lastMidQuote = (float(data[0][2]) + float(data[0][4])) / 2 
         
-        midQuoteReturns = []
-        for startI in range( 1, nRecs ):
-            timestamp = int(data[startI][1])       
-                
-            # check this
-            if timestamp > (lastTs + delta): 
-                midQuote = (float(data[startI][2]) + float(data[startI][4])) / 2 
-                midQuoteReturns.append( (midQuote / lastMidQuote) - 1 )
-                lastTs = lastTs + delta
-                lastMidQuote = midQuote
+        startTS = 19 * 60 * 60 * 1000 / 2
+        endTS = 16 * 60 * 60 * 1000
+        numBuckets = int((endTS - startTS) / delta)
     
+        midQuoteReturns = [None] * numBuckets
+        iBucket = -1 # The 0th bucket
+        
+        # midQuoteReturns = []
+        for startI in range( 1, nRecs ):
+            timestamp = int(data[startI][1]) 
+            # Are we past the end of good data?
+            if timestamp >= endTS:
+                # Yes, we are past the end of good data
+                # Stop computing data buckets
+                break
+            # No we are not pas the end of good data
+            # Are we still iterating over data that appears before
+            #   the specified start of good data?
+            if timestamp < startTS:
+                # Yes, we have to skip this data
+                continue
+              
+            newBucket = int( floor( ( timestamp - startTS ) / delta ) )
+            if iBucket != newBucket:
+                # This is a new bucket
+                
+                midQuote = (float(data[startI][2]) + float(data[startI][4])) / 2 
+                midQuoteReturns[ newBucket ] = (midQuote / lastMidQuote) - 1
+                
+                # Save our new bucket count
+                iBucket = newBucket
+                lastMidQuote = midQuote
         return midQuoteReturns
     
     def getSTDXMinMidQuoteRet(self, midquoteReturns):
-        return np.std(midquoteReturns) * np.sqrt(252 * 30 * 13 / 2) #annualize the 2 min returns
+        return np.std(filter(None,midquoteReturns)) * np.sqrt(252 * 30 * 13 / 2) #annualize the 2 min returns
     
     # compute total daily vol 
     def getTotalDailyVol(self):

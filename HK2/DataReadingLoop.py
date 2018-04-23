@@ -10,14 +10,14 @@ import csv
 from adjustAndClean.StackData import StackData
 from HK2.Stats import Stats
 
-keys = ['arrival_price', 'imbalance', 'terminal_price', 'VWAPuntil330', 'VWAPuntil400', 'vol', 'imbalance_value', '2_minute_returns', 'std_2_min_returns']
+keys = ['arrival_price', 'imbalance', 'terminal_price', 'VWAPuntil330', 'VWAPuntil400', 'vol', 'imbalance_value', 'std_2_min_returns', '2_minute_returns']
 # , '2_minute_returns'
 
 times = {
     '9:30': 19 * 60 * 60 * 1000 / 2,
     '15:30': 31 * 60 * 60 * 1000 / 2,
     '16:00': 16 * 60 * 60 * 1000,
-    '2min': 2 * 60 * 100
+    '2min': 2 * 60 * 1000
 }
 
   
@@ -84,10 +84,14 @@ j = 0
 errored = []
 
 dates = os.listdir(baseDir + '/quotes/')
-D = len(dates)
 #Add dummy date
 dates.append('20070921')
+try:
+    dates.remove('.DS_Store') 
+except:
+    None
 dates.sort()
+D = len(dates)
 
 stats = {}
 for key in keys:

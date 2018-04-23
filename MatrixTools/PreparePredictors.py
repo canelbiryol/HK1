@@ -26,7 +26,8 @@ class PreparePredictors(object):
         for x in range(self.N):
             netReturn = 1
             for y in range(N_ticks):
-                netReturn *= 1+outOfSampleStockReturns[x][y]
+                if outOfSampleStockReturns[x][y]:
+                    netReturn *= 1 + outOfSampleStockReturns[x][y]
             self.netReturns[x] = netReturn - 1
         
         ##Normalize

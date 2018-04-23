@@ -10,7 +10,7 @@ class StatsReader(object):
     numpy array, to be sent to OptimizeEtaBeta class.
     '''
 
-    def __init__(self, statsPath, boolDisplay=False, actPass=[False,False]):
+    def __init__(self, statsPath, boolDisplay=False, actPass=[False,False], flatten=True):
         
         self._statsPath = statsPath
         self._xlsStats = pd.ExcelFile(statsPath)
@@ -30,8 +30,9 @@ class StatsReader(object):
         self._imbalancevalue = self.toVector(pd.read_excel(self._xlsStats, 'imbalance_value'), indicesToDrop, boolDisplay, actPass).astype(float)
         self._std2minutereturn = self.toVector(pd.read_excel(self._xlsStats, 'std_2_min_returns'), indicesToDrop, boolDisplay, actPass).astype(float)
         # To add if 2 minute returns needed
-        #self._2minutereturn = self.toVector(pd.read_excel(self._xlsStats, '2_minute_returns'), indicesToDrop, boolDisplay).astype(ndarray)
-
+        #self._2minutereturn = self.toVector(pd.read_excel(self._xlsStats, '2_minute_returns'), indicesToDrop, boolDisplay).astype(np.ndarray)
+        self._2minutereturn = self.toVector(pd.read_excel(self._xlsStats, '2_minute_returns'), indicesToDrop, boolDisplay, flatten=flatten).astype(np.ndarray)
+        
     # Get indices of all rows of all sheets containing NaN
     def getIndicesToDrop(self):
         
@@ -42,15 +43,16 @@ class StatsReader(object):
         inds = np.concatenate((inds, np.array(np.where(np.asanyarray(np.isnan((pd.read_excel(self._xlsStats, 'VWAPuntil400').values[:,1:]).astype(float)))))[0]),0)
         inds = np.concatenate((inds, np.array(np.where(np.asanyarray(np.isnan((pd.read_excel(self._xlsStats, 'vol').values[:,1:]).astype(float)))))[0]),0)
         inds = np.concatenate((inds, np.array(np.where(np.asanyarray(np.isnan((pd.read_excel(self._xlsStats, 'imbalance_value').values[:,1:]).astype(float)))))[0]),0)
-        inds = np.concatenate((inds, np.array(np.where(np.asanyarray(np.isnan((pd.read_excel(self._xlsStats, 'std_2_min_returns').values[:,1:]).astype(float)))))[0]),0)
-        # To add if 2 minute returns needed
-        #inds = np.concatenate((inds, np.array(np.where(np.asanyarray(np.isnan((pd.read_excel(self._xlsStats, '2_minute_returns').values[:,1:]).astype(ndarray)))))[0]),0)
+        # inds = np.concatenate((inds, np.array(np.where(np.asanyarray(np.isnan((pd.read_excel(self._xlsStats, 'std_2_min_returns').values[:,1:]).astype(float)))))[0]),0)
+        # To add if 2 minute returns needed'
+        #print([[eval(cell) for cell in row] for row in pd.read_excel(self._xlsStats, '2_minute_returns').values[:,1:]])
+        #inds = np.concatenate((inds, np.array(np.where(np.asanyarray(pd.isnull((np.array([[eval(cell) for cell in row] for row in pd.read_excel(self._xlsStats, '2_minute_returns').values[:,1:]])).astype(np.ndarray)))))[0]),0)
 
         inds = np.unique(inds)
         return(inds)
     
     # Flattens a pandas dataframe to a big vector
-    def toVector(self, pdMatrix, indicesDropped, display=False, actPass=False):
+    def toVector(self, pdMatrix, indicesDropped, display=False, actPass=False, flatten=True):
         newMat = pdMatrix.drop(pdMatrix.index[indicesDropped])
         
         if actPass==[True,False]:
@@ -70,7 +72,11 @@ class StatsReader(object):
         if display:
             print(newMat)
         
-        return((newMat.drop(['ticker'], axis=1)).values.flatten())
+        values = (newMat.drop(['ticker'], axis=1)).values
+        if flatten:
+            return values.flatten()
+        return values
+    
 
     # Getters
     def getNumberOfDays(self):
@@ -107,8 +113,8 @@ class StatsReader(object):
         return(self._std2minutereturn)
     
     # To add if 2 minute returns needed
-    #def get2minRetArraysVector(self):
-        #return(self._2minutereturn)
+    def get2minRetArraysVector(self):
+        return(self._2minutereturn)
     
     # Average Daily Values (10 days loopback)
     def getADValuesVector(self):
