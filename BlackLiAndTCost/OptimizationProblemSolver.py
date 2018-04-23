@@ -1,20 +1,24 @@
 import numpy as np
 from cvxopt import matrix
-from cvxopt.solvers import qp
+from cvxopt.solvers import qp, options
 from HeteroskedasticErrors.StatsReader import StatsReader
 # Display configurations
 #np.set_printoptions(threshold=50)
 
+
+
 """
 Main program to solve sequentially (day by day) the portfolio optimization problem of part 2.
 """
+
+
 
 ## Statistics
 print('Reading statistics')
 
 stats = StatsReader('/media/louis/DATA/documents/cours/NYU/SPRING_18/ATQS/HK1/stats/stats.xlsx')
 # Dimensionnality of the problem (tickers, days)
-m,n = stats.getNumberOfTickers(), stats.getNumberOfDays()
+m, n = stats.getNumberOfTickers(), stats.getNumberOfDays()
 
 # Sigmas
 sigmas = stats.getStdErrorVector().reshape(m,n-1)
@@ -69,7 +73,7 @@ annualExpAritReturns = [(x + 1)**252 - 1 for x in expAritReturns]
 print('Deal with numerical instability modifying the positive-definite status of the covariance matrix')
 
 # FIRST SOLUTION: Make it closer to the identity matrix by introducing a diagonal constant perturbation.
-epsilon = 0.001
+epsilon = 0.01
 annualCovAritReturns += epsilon * np.eye(m)
 #print(np.linalg.eigh(annualCovAritReturns))
 
@@ -100,7 +104,7 @@ print('Initialize parameters of the sequential optimization')
 
 # Lambda, gamma, covariance matrix, expected returns
 aversionLambda = 1.
-gamma = 1.
+gamma = 1000.
 P = matrix(-2 * aversionLambda * annualCovAritReturns)
 mu = annualExpAritReturns
 
@@ -146,6 +150,7 @@ for day in range(1,n-1):
     #print(q,"END")
     
     # Optimize with cvxopt quadratic programming function (max(I) = -min(-I)), and get weights
+    options['show_progress'] = False
     optWeightSeq[:,day] = -np.array(qp(-P, -q, G, h, A,b, initvals = optWeightSeq[:,day-1])['x']).flatten()
     
     # Compute daily return and risks values
